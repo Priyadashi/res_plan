@@ -1,0 +1,1435 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Hub Resource Planning Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --success: #059669;
+            --success-light: #10b981;
+            --warning: #d97706;
+            --warning-light: #f59e0b;
+            --danger: #dc2626;
+            --danger-light: #ef4444;
+            --info: #0284c7;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --bg-input: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: var(--bg-card);
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-outline:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #0369a1; }
+        .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.75rem; }
+
+        .tabs {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .tabs-list {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+        }
+
+        .tab-btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover { color: var(--text-secondary); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .main-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.25rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+        .card-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.125rem; }
+        .card-body { padding: 1.25rem; }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .data-table th {
+            background: var(--bg-page);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 0.625rem 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 0.625rem 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover { background: var(--bg-hover); }
+
+        .data-table input, .data-table select {
+            width: 100%;
+            padding: 0.375rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: white;
+        }
+
+        .data-table input:focus, .data-table select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .data-table input[type="number"] { width: 70px; }
+
+        .allocation-grid { display: grid; gap: 0.75rem; }
+
+        .allocation-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.875rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px 80px 140px auto;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .allocation-row select, .allocation-row input {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-card.primary .metric-icon { background: #eef2ff; }
+        .metric-card.success .metric-icon { background: #ecfdf5; }
+        .metric-card.info .metric-icon { background: #f0f9ff; }
+        .metric-card.warning .metric-icon { background: #fffbeb; }
+        .metric-card.danger .metric-icon { background: #fef2f2; }
+
+        .metric-value { font-size: 1.75rem; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; }
+
+        .metric-card.primary .metric-value { color: var(--primary); }
+        .metric-card.success .metric-value { color: var(--success); }
+        .metric-card.info .metric-value { color: var(--info); }
+        .metric-card.warning .metric-value { color: var(--warning); }
+        .metric-card.danger .metric-value { color: var(--danger); }
+
+        .metric-label { color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; }
+        .metric-subtitle { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .chart-card.full-width { grid-column: 1 / -1; }
+        .chart-header { margin-bottom: 0.75rem; }
+        .chart-title { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+        .chart-subtitle { font-size: 0.7rem; color: var(--text-muted); }
+        .chart-container { height: 260px; position: relative; }
+
+        .heatmap-container { overflow-x: auto; }
+
+        .heatmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .heatmap-table th, .heatmap-table td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .heatmap-table th {
+            background: var(--bg-page);
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .heatmap-table td:first-child, .heatmap-table th:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: var(--bg-card);
+            font-weight: 500;
+        }
+
+        .heatmap-cell {
+            border-radius: 4px;
+            padding: 0.4rem 0.3rem;
+            font-weight: 600;
+            min-width: 55px;
+            font-size: 0.75rem;
+        }
+
+        .heatmap-available { background: #f1f5f9; color: #64748b; }
+        .heatmap-low { background: #fee2e2; color: #991b1b; }
+        .heatmap-medium { background: #fef3c7; color: #92400e; }
+        .heatmap-optimal { background: #dcfce7; color: #166534; }
+        .heatmap-high { background: #dbeafe; color: #1e40af; }
+        .heatmap-overload { background: #dc2626; color: white; }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty-state h3 { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.35rem; }
+        .empty-state p { font-size: 0.85rem; margin-bottom: 1rem; }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--text-primary);
+            color: white;
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show { display: block; }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: white;
+            min-width: 140px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-row { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+            .allocation-row { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-content { flex-direction: column; gap: 0.75rem; }
+            .tabs-list { overflow-x: auto; }
+        }
+
+        @media print {
+            .header, .tabs, .filters-bar, .btn { display: none !important; }
+            .tab-panel { display: block !important; }
+            #tab-resources, #tab-projects, #tab-allocations { display: none !important; }
+            #tab-dashboard { display: block !important; }
+            .main-content { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">ERP Hub Resource Planning</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="importData()">📥 Import</button>
+                <button class="btn btn-success" onclick="saveFile()">💾 Save File</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <div class="tabs-list">
+            <button class="tab-btn active" data-tab="resources">👥 Resources</button>
+            <button class="tab-btn" data-tab="projects">📁 Projects</button>
+            <button class="tab-btn" data-tab="allocations">📅 Allocations</button>
+            <button class="tab-btn" data-tab="dashboard">📊 Dashboard</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- RESOURCES TAB -->
+        <div id="tab-resources" class="tab-panel active">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Team Resources</div>
+                        <div class="card-subtitle">Manage your team members and their skills</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addResource()">+ Add Resource</button>
+                </div>
+                <div class="card-body">
+                    <table class="data-table" id="resourcesTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Primary Skill</th>
+                                <th>Secondary Skill</th>
+                                <th>Status</th>
+                                <th>Hours/Week</th>
+                                <th>Cost Rate ($/hr)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resourcesBody">
+                <tr>
+                    <td><input type="text" value="Alice Johnson" onchange="updateResource('R001','name',this.value)"></td>
+                    <td><select onchange="updateResource('R001','primarySkill',this.value)"><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R001','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX" selected="">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R001','status',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Leave">Leave</option>
+                    </select></td>
+                    <td><input type="number" value="40" onchange="updateResource('R001','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="150" onchange="updateResource('R001','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R001')">×</button></td>
+                </tr>
+            
+                <tr>
+                    <td><input type="text" value="Bob Smith" onchange="updateResource('R002','name',this.value)"></td>
+                    <td><select onchange="updateResource('R002','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend" selected="">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R002','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps" selected="">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R002','status',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Leave">Leave</option>
+                    </select></td>
+                    <td><input type="number" value="40" onchange="updateResource('R002','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="160" onchange="updateResource('R002','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R002')">×</button></td>
+                </tr>
+            
+                <tr>
+                    <td><input type="text" value="Carol Williams" onchange="updateResource('R003','name',this.value)"></td>
+                    <td><select onchange="updateResource('R003','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack" selected="">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R003','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend" selected="">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R003','status',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Leave">Leave</option>
+                    </select></td>
+                    <td><input type="number" value="40" onchange="updateResource('R003','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="175" onchange="updateResource('R003','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R003')">×</button></td>
+                </tr>
+            
+                <tr>
+                    <td><input type="text" value="Sandeep Sahota" onchange="updateResource('R004','name',this.value)"></td>
+                    <td><select onchange="updateResource('R004','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack" selected="">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R004','secondarySkill',this.value)"><option value="">None</option><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R004','status',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Leave">Leave</option>
+                    </select></td>
+                    <td><input type="number" value="40" onchange="updateResource('R004','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="100" onchange="updateResource('R004','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R004')">×</button></td>
+                </tr>
+            
+                <tr>
+                    <td><input type="text" value="Ganesh Rajan" onchange="updateResource('R005','name',this.value)"></td>
+                    <td><select onchange="updateResource('R005','primarySkill',this.value)"><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R005','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
+                    <td><select onchange="updateResource('R005','status',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Leave">Leave</option>
+                    </select></td>
+                    <td><input type="number" value="40" onchange="updateResource('R005','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="100" onchange="updateResource('R005','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R005')">×</button></td>
+                </tr>
+            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROJECTS TAB -->
+        <div id="tab-projects" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Projects Portfolio</div>
+                        <div class="card-subtitle">Active and planned projects in your pipeline</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addProject()">+ Add Project</button>
+                </div>
+                <div class="card-body">
+                    <table class="data-table" id="projectsTable">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Client</th>
+                                <th>Type</th>
+                                <th>Probability %</th>
+                                <th>Priority</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Required FTE</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsBody">
+                <tr>
+                    <td><input type="text" value="E-Commerce Platform" onchange="updateProject('P001','name',this.value)" style="min-width:140px"></td>
+                    <td><input type="text" value="RetailCorp" onchange="updateProject('P001','client',this.value)"></td>
+                    <td><select onchange="updateProject('P001','type',this.value)">
+                        <option value="Active" selected="">Active</option>
+                        <option value="Planned">Planned</option>
+                    </select></td>
+                    <td><input type="number" value="100" min="0" max="100" onchange="updateProject('P001','probability',+this.value)"></td>
+                    <td><select onchange="updateProject('P001','priority',this.value)">
+                        <option value="High" selected="">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select></td>
+                    <td><input type="date" value="2025-01-15" onchange="updateProject('P001','startDate',this.value)"></td>
+                    <td><input type="date" value="2025-06-30" onchange="updateProject('P001','endDate',this.value)"></td>
+                    <td><input type="number" value="3" step="0.5" onchange="updateProject('P001','requiredFTE',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('P001')">×</button></td>
+                </tr>
+            
+                <tr>
+                    <td><input type="text" value="Analytics Dashboard" onchange="updateProject('P002','name',this.value)" style="min-width:140px"></td>
+                    <td><input type="text" value="DataDriven Inc" onchange="updateProject('P002','client',this.value)"></td>
+                    <td><select onchange="updateProject('P002','type',this.value)">
+                        <option value="Active">Active</option>
+                        <option value="Planned" selected="">Planned</option>
+                    </select></td>
+                    <td><input type="number" value="75" min="0" max="100" onchange="updateProject('P002','probability',+this.value)"></td>
+                    <td><select onchange="updateProject('P002','priority',this.value)">
+                        <option value="High">High</option>
+                        <option value="Medium" selected="">Medium</option>
+                        <option value="Low">Low</option>
+                    </select></td>
+                    <td><input type="date" value="2025-03-01" onchange="updateProject('P002','startDate',this.value)"></td>
+                    <td><input type="date" value="2025-07-31" onchange="updateProject('P002','endDate',this.value)"></td>
+                    <td><input type="number" value="2" step="0.5" onchange="updateProject('P002','requiredFTE',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('P002')">×</button></td>
+                </tr>
+            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALLOCATIONS TAB -->
+        <div id="tab-allocations" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Resource Allocations</div>
+                        <div class="card-subtitle">Map resources to projects by month</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addAllocation()">+ Add Allocation</button>
+                </div>
+                <div class="card-body">
+                    <div class="filters-bar">
+                        <select class="filter-select" id="allocFilterResource" onchange="renderAllocations()"><option value="">All Resources</option><option value="R001">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option></select>
+                        <select class="filter-select" id="allocFilterProject" onchange="renderAllocations()"><option value="">All Projects</option><option value="P001">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option></select>
+                        <select class="filter-select" id="allocFilterMonth" onchange="renderAllocations()"><option value="">All Months</option><option value="Jan-2025">Jan-2025</option><option value="Feb-2025">Feb-2025</option></select>
+                    </div>
+                    <div class="allocation-grid" id="allocationsGrid">
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('A001','resourceId',this.value)">
+                        <option value="R001" selected="">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
+                    </select>
+                    <select onchange="updateAllocation('A001','projectId',this.value)">
+                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
+                    </select>
+                    <select onchange="updateAllocation('A001','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
+                    <input type="number" value="80" min="0" max="100" onchange="updateAllocation('A001','percent',+this.value)">
+                    <input type="text" value="Lead Developer" placeholder="Role" onchange="updateAllocation('A001','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A001')">×</button>
+                </div>
+            
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('A002','resourceId',this.value)">
+                        <option value="R001">Sanjay Vyas</option><option value="R002" selected="">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
+                    </select>
+                    <select onchange="updateAllocation('A002','projectId',this.value)">
+                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
+                    </select>
+                    <select onchange="updateAllocation('A002','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
+                    <input type="number" value="60" min="0" max="100" onchange="updateAllocation('A002','percent',+this.value)">
+                    <input type="text" value="Backend Dev" placeholder="Role" onchange="updateAllocation('A002','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A002')">×</button>
+                </div>
+            
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('A003','resourceId',this.value)">
+                        <option value="R001" selected="">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
+                    </select>
+                    <select onchange="updateAllocation('A003','projectId',this.value)">
+                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
+                    </select>
+                    <select onchange="updateAllocation('A003','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
+                    <input type="number" value="80" min="0" max="100" onchange="updateAllocation('A003','percent',+this.value)">
+                    <input type="text" value="Lead Developer" placeholder="Role" onchange="updateAllocation('A003','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A003')">×</button>
+                </div>
+            
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('A004','resourceId',this.value)">
+                        <option value="R001">Sanjay Vyas</option><option value="R002" selected="">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
+                    </select>
+                    <select onchange="updateAllocation('A004','projectId',this.value)">
+                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
+                    </select>
+                    <select onchange="updateAllocation('A004','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
+                    <input type="number" value="70" min="0" max="100" onchange="updateAllocation('A004','percent',+this.value)">
+                    <input type="text" value="Backend Dev" placeholder="Role" onchange="updateAllocation('A004','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A004')">×</button>
+                </div>
+            
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('A005','resourceId',this.value)">
+                        <option value="R001">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003" selected="">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
+                    </select>
+                    <select onchange="updateAllocation('A005','projectId',this.value)">
+                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
+                    </select>
+                    <select onchange="updateAllocation('A005','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
+                    <input type="number" value="50" min="0" max="100" onchange="updateAllocation('A005','percent',+this.value)">
+                    <input type="text" value="Full Stack Dev" placeholder="Role" onchange="updateAllocation('A005','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A005')">×</button>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-panel">
+            <div class="dashboard-header">
+                <div class="filters-bar" style="margin-bottom: 0;">
+                    <select class="filter-select" id="dashFilterSkill" onchange="renderDashboard()"><option value="">All Skills</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option></select>
+                    <select class="filter-select" id="dashFilterType" onchange="renderDashboard()">
+                        <option value="">All Types</option>
+                        <option value="Active">Active</option>
+                        <option value="Planned">Planned</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" onclick="resetDashFilters()">Reset</button>
+                </div>
+                <button class="btn btn-info" onclick="exportPDF()">📄 Export PDF</button>
+            </div>
+
+            <div id="dashboardContent">
+                <section class="metrics-grid">
+                    <div class="metric-card primary">
+                        <div class="metric-icon">📂</div>
+                        <div class="metric-value" id="metricActiveProjects">1</div>
+                        <div class="metric-label">Active Projects</div>
+                        <div class="metric-subtitle">Confirmed</div>
+                    </div>
+                    <div class="metric-card info">
+                        <div class="metric-icon">📋</div>
+                        <div class="metric-value" id="metricPlannedProjects">1</div>
+                        <div class="metric-label">Planned Projects</div>
+                        <div class="metric-subtitle" id="metricWeightedFTE">1.5 weighted FTE</div>
+                    </div>
+                    <div class="metric-card success">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-value" id="metricResources">5</div>
+                        <div class="metric-label">Total Resources</div>
+                        <div class="metric-subtitle" id="metricAvgUtil">65% avg util</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <div class="metric-icon">⚠️</div>
+                        <div class="metric-value" id="metricAvailable">2</div>
+                        <div class="metric-label">Available</div>
+                        <div class="metric-subtitle">Under 50%</div>
+                    </div>
+                    <div class="metric-card danger">
+                        <div class="metric-icon">🔥</div>
+                        <div class="metric-value" id="metricOverloaded">0</div>
+                        <div class="metric-label">Overloaded</div>
+                        <div class="metric-subtitle">Over 100%</div>
+                    </div>
+                </section>
+
+                <section class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Project Pipeline</div>
+                            <div class="chart-subtitle">Active and planned projects by FTE</div>
+                        </div>
+                        <div class="chart-container"><canvas id="pipelineChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Aggregate Utilization</div>
+                            <div class="chart-subtitle">Team capacity over time</div>
+                        </div>
+                        <div class="chart-container"><canvas id="utilizationChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                    </div>
+                </section>
+
+                <section class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Projected Revenue</div>
+                            <div class="chart-subtitle">Monthly revenue forecast</div>
+                        </div>
+                        <div class="chart-container"><canvas id="revenueChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Supply vs Demand</div>
+                            <div class="chart-subtitle">Capacity gap by skill</div>
+                        </div>
+                        <div class="chart-container"><canvas id="supplyDemandChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                    </div>
+                </section>
+
+                <section class="charts-row">
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <div class="chart-title">Resource Utilization Heatmap</div>
+                            <div class="chart-subtitle">Monthly allocation per resource</div>
+                        </div>
+                        <div class="heatmap-container">
+                            <table class="heatmap-table" id="heatmapTable">
+                                <thead><tr><th>Resource</th><th>Jan-2025</th><th>Feb-2025</th><th>Avg</th></tr></thead>
+                                <tbody><tr><td>Alice Johnson</td><td><div class="heatmap-cell heatmap-optimal">80%</div></td><td><div class="heatmap-cell heatmap-optimal">80%</div></td><td><div class="heatmap-cell heatmap-optimal">80%</div></td></tr><tr><td>Bob Smith</td><td><div class="heatmap-cell heatmap-medium">60%</div></td><td><div class="heatmap-cell heatmap-optimal">70%</div></td><td><div class="heatmap-cell heatmap-medium">65%</div></td></tr><tr><td>Carol Williams</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-medium">50%</div></td><td><div class="heatmap-cell heatmap-medium">50%</div></td></tr><tr><td>Sandeep Sahota</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td></tr><tr><td>Ganesh Rajan</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td></tr></tbody>
+                            </table>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item"><div class="legend-color heatmap-available"></div><span>0%</span></div>
+                            <div class="legend-item"><div class="legend-color heatmap-low"></div><span>&lt;50%</span></div>
+                            <div class="legend-item"><div class="legend-color heatmap-medium"></div><span>50-70%</span></div>
+                            <div class="legend-item"><div class="legend-color heatmap-optimal"></div><span>70-90%</span></div>
+                            <div class="legend-item"><div class="legend-color heatmap-high"></div><span>90-100%</span></div>
+                            <div class="legend-item"><div class="legend-color heatmap-overload"></div><span>&gt;100%</span></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ========== DATA STORE ==========
+        let data = {
+            resources: [
+                {id: "R001", name: "Alice Johnson", primarySkill: "Frontend", secondarySkill: "UI/UX", status: "Active", hoursPerWeek: 40, costRate: 150},
+                {id: "R002", name: "Bob Smith", primarySkill: "Backend", secondarySkill: "DevOps", status: "Active", hoursPerWeek: 40, costRate: 160},
+                {id: "R003", name: "Carol Williams", primarySkill: "Full Stack", secondarySkill: "Backend", status: "Active", hoursPerWeek: 40, costRate: 175}
+            ],
+            projects: [
+                {id: "P001", name: "E-Commerce Platform", client: "RetailCorp", type: "Active", probability: 100, priority: "High", startDate: "2025-01-15", endDate: "2025-06-30", requiredFTE: 3},
+                {id: "P002", name: "Analytics Dashboard", client: "DataDriven Inc", type: "Planned", probability: 75, priority: "Medium", startDate: "2025-03-01", endDate: "2025-07-31", requiredFTE: 2}
+            ],
+            allocations: [
+                {id: "A001", resourceId: "R001", projectId: "P001", month: "Jan-2025", percent: 80, role: "Lead Developer"},
+                {id: "A002", resourceId: "R002", projectId: "P001", month: "Jan-2025", percent: 60, role: "Backend Dev"},
+                {id: "A003", resourceId: "R001", projectId: "P001", month: "Feb-2025", percent: 80, role: "Lead Developer"},
+                {id: "A004", resourceId: "R002", projectId: "P001", month: "Feb-2025", percent: 70, role: "Backend Dev"},
+                {id: "A005", resourceId: "R003", projectId: "P001", month: "Feb-2025", percent: 50, role: "Full Stack Dev"}
+            ]
+        };
+
+        let charts = {};
+
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved data if exists
+            const saved = '{"resources":[{"id":"R001","name":"Sanjay Vyas","primarySkill":"Frontend","secondarySkill":"UI/UX","status":"Active","hoursPerWeek":40,"costRate":150},{"id":"R002","name":"Sameer Nayak","primarySkill":"Backend","secondarySkill":"DevOps","status":"Active","hoursPerWeek":40,"costRate":160},{"id":"R003","name":"Abhinav Sirohi","primarySkill":"Full Stack","secondarySkill":"Backend","status":"Active","hoursPerWeek":40,"costRate":175},{"id":"R004","name":"Sandeep Sahota","primarySkill":"Full Stack","secondarySkill":"Frontend","status":"Active","hoursPerWeek":40,"costRate":100},{"id":"R005","name":"Ganesh Rajan","primarySkill":"Frontend","secondarySkill":"","status":"Active","hoursPerWeek":40,"costRate":100}],"projects":[{"id":"P001","name":"E-Commerce Platform","client":"RetailCorp","type":"Active","probability":100,"priority":"High","startDate":"2025-01-15","endDate":"2025-06-30","requiredFTE":3},{"id":"P002","name":"Analytics Dashboard","client":"DataDriven Inc","type":"Planned","probability":75,"priority":"Medium","startDate":"2025-03-01","endDate":"2025-07-31","requiredFTE":2}],"allocations":[{"id":"A001","resourceId":"R001","projectId":"P001","month":"Jan-2025","percent":80,"role":"Lead Developer"},{"id":"A002","resourceId":"R002","projectId":"P001","month":"Jan-2025","percent":60,"role":"Backend Dev"},{"id":"A003","resourceId":"R001","projectId":"P001","month":"Feb-2025","percent":80,"role":"Lead Developer"},{"id":"A004","resourceId":"R002","projectId":"P001","month":"Feb-2025","percent":70,"role":"Backend Dev"},{"id":"A005","resourceId":"R003","projectId":"P001","month":"Feb-2025","percent":50,"role":"Full Stack Dev"}]}';
+            if (saved) {
+                try { data = JSON.parse(saved); } catch(e) {}
+            }
+
+            // Setup tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            renderResources();
+            renderProjects();
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'allocations') {
+                populateAllocationFilters();
+                renderAllocations();
+            } else if (tabName === 'dashboard') {
+                populateDashFilters();
+                renderDashboard();
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function genId(prefix) {
+            const arr = prefix === 'R' ? data.resources : prefix === 'P' ? data.projects : data.allocations;
+            const nums = arr.map(x => parseInt(x.id.replace(prefix, '')) || 0);
+            return prefix + (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('erpPlanningData', JSON.stringify(data));
+        }
+
+        // ========== RESOURCES ==========
+        function renderResources() {
+            const tbody = document.getElementById('resourcesBody');
+            if (data.resources.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">👥</div><h3>No resources yet</h3><p>Add your first team member</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.resources.map(r => `
+                <tr>
+                    <td><input type="text" value="${r.name}" onchange="updateResource('${r.id}','name',this.value)"></td>
+                    <td><select onchange="updateResource('${r.id}','primarySkill',this.value)">${skillOpts(r.primarySkill)}</select></td>
+                    <td><select onchange="updateResource('${r.id}','secondarySkill',this.value)"><option value="">None</option>${skillOpts(r.secondarySkill)}</select></td>
+                    <td><select onchange="updateResource('${r.id}','status',this.value)">
+                        <option value="Active" ${r.status==='Active'?'selected':''}>Active</option>
+                        <option value="Bench" ${r.status==='Bench'?'selected':''}>Bench</option>
+                        <option value="Leave" ${r.status==='Leave'?'selected':''}>Leave</option>
+                    </select></td>
+                    <td><input type="number" value="${r.hoursPerWeek}" onchange="updateResource('${r.id}','hoursPerWeek',+this.value)"></td>
+                    <td><input type="number" value="${r.costRate}" onchange="updateResource('${r.id}','costRate',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('${r.id}')">×</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function skillOpts(sel) {
+            return ['Frontend','Backend','Full Stack','DevOps','UI/UX','QA','Data','Mobile','Cloud','Security']
+                .map(s => `<option value="${s}" ${s===sel?'selected':''}>${s}</option>`).join('');
+        }
+
+        function addResource() {
+            data.resources.push({id: genId('R'), name: 'New Resource', primarySkill: 'Frontend', secondarySkill: '', status: 'Active', hoursPerWeek: 40, costRate: 100});
+            renderResources();
+            saveToLocal();
+            showToast('Resource added');
+        }
+
+        function updateResource(id, field, val) {
+            const r = data.resources.find(x => x.id === id);
+            if (r) { r[field] = val; saveToLocal(); }
+        }
+
+        function deleteResource(id) {
+            if (confirm('Delete this resource?')) {
+                data.resources = data.resources.filter(x => x.id !== id);
+                data.allocations = data.allocations.filter(x => x.resourceId !== id);
+                renderResources();
+                saveToLocal();
+                showToast('Resource deleted');
+            }
+        }
+
+        // ========== PROJECTS ==========
+        function renderProjects() {
+            const tbody = document.getElementById('projectsBody');
+            if (data.projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📁</div><h3>No projects yet</h3><p>Add your first project</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.projects.map(p => `
+                <tr>
+                    <td><input type="text" value="${p.name}" onchange="updateProject('${p.id}','name',this.value)" style="min-width:140px"></td>
+                    <td><input type="text" value="${p.client}" onchange="updateProject('${p.id}','client',this.value)"></td>
+                    <td><select onchange="updateProject('${p.id}','type',this.value)">
+                        <option value="Active" ${p.type==='Active'?'selected':''}>Active</option>
+                        <option value="Planned" ${p.type==='Planned'?'selected':''}>Planned</option>
+                    </select></td>
+                    <td><input type="number" value="${p.probability}" min="0" max="100" onchange="updateProject('${p.id}','probability',+this.value)"></td>
+                    <td><select onchange="updateProject('${p.id}','priority',this.value)">
+                        <option value="High" ${p.priority==='High'?'selected':''}>High</option>
+                        <option value="Medium" ${p.priority==='Medium'?'selected':''}>Medium</option>
+                        <option value="Low" ${p.priority==='Low'?'selected':''}>Low</option>
+                    </select></td>
+                    <td><input type="date" value="${p.startDate}" onchange="updateProject('${p.id}','startDate',this.value)"></td>
+                    <td><input type="date" value="${p.endDate}" onchange="updateProject('${p.id}','endDate',this.value)"></td>
+                    <td><input type="number" value="${p.requiredFTE}" step="0.5" onchange="updateProject('${p.id}','requiredFTE',+this.value)"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">×</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function addProject() {
+            const today = new Date().toISOString().split('T')[0];
+            const end = new Date();
+            end.setMonth(end.getMonth() + 3);
+            data.projects.push({id: genId('P'), name: 'New Project', client: 'Client', type: 'Planned', probability: 50, priority: 'Medium', startDate: today, endDate: end.toISOString().split('T')[0], requiredFTE: 1});
+            renderProjects();
+            saveToLocal();
+            showToast('Project added');
+        }
+
+        function updateProject(id, field, val) {
+            const p = data.projects.find(x => x.id === id);
+            if (p) { p[field] = val; saveToLocal(); }
+        }
+
+        function deleteProject(id) {
+            if (confirm('Delete this project?')) {
+                data.projects = data.projects.filter(x => x.id !== id);
+                data.allocations = data.allocations.filter(x => x.projectId !== id);
+                renderProjects();
+                saveToLocal();
+                showToast('Project deleted');
+            }
+        }
+
+        // ========== ALLOCATIONS ==========
+        function populateAllocationFilters() {
+            document.getElementById('allocFilterResource').innerHTML = '<option value="">All Resources</option>' +
+                data.resources.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+            document.getElementById('allocFilterProject').innerHTML = '<option value="">All Projects</option>' +
+                data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            const months = [...new Set(data.allocations.map(a => a.month))];
+            document.getElementById('allocFilterMonth').innerHTML = '<option value="">All Months</option>' +
+                sortMonths(months).map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+
+        function renderAllocations() {
+            const grid = document.getElementById('allocationsGrid');
+            const rf = document.getElementById('allocFilterResource').value;
+            const pf = document.getElementById('allocFilterProject').value;
+            const mf = document.getElementById('allocFilterMonth').value;
+
+            let filtered = data.allocations;
+            if (rf) filtered = filtered.filter(a => a.resourceId === rf);
+            if (pf) filtered = filtered.filter(a => a.projectId === pf);
+            if (mf) filtered = filtered.filter(a => a.month === mf);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><h3>No allocations</h3><p>Map resources to projects</p></div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(a => `
+                <div class="allocation-row">
+                    <select onchange="updateAllocation('${a.id}','resourceId',this.value)">
+                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===a.resourceId?'selected':''}>${r.name}</option>`).join('')}
+                    </select>
+                    <select onchange="updateAllocation('${a.id}','projectId',this.value)">
+                        ${data.projects.map(p => `<option value="${p.id}" ${p.id===a.projectId?'selected':''}>${p.name}</option>`).join('')}
+                    </select>
+                    <select onchange="updateAllocation('${a.id}','month',this.value)">${monthOpts(a.month)}</select>
+                    <input type="number" value="${a.percent}" min="0" max="100" onchange="updateAllocation('${a.id}','percent',+this.value)">
+                    <input type="text" value="${a.role||''}" placeholder="Role" onchange="updateAllocation('${a.id}','role',this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('${a.id}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        function monthOpts(sel) {
+            const months = [];
+            const d = new Date();
+            d.setDate(1);
+            for (let i = -2; i < 12; i++) {
+                const t = new Date(d);
+                t.setMonth(t.getMonth() + i);
+                months.push(t.toLocaleDateString('en-US', {month:'short',year:'numeric'}).replace(' ','-'));
+            }
+            return months.map(m => `<option value="${m}" ${m===sel?'selected':''}>${m}</option>`).join('');
+        }
+
+        function addAllocation() {
+            if (!data.resources.length || !data.projects.length) {
+                showToast('Add resources and projects first');
+                return;
+            }
+            const m = new Date().toLocaleDateString('en-US', {month:'short',year:'numeric'}).replace(' ','-');
+            data.allocations.push({id: genId('A'), resourceId: data.resources[0].id, projectId: data.projects[0].id, month: m, percent: 50, role: ''});
+            renderAllocations();
+            saveToLocal();
+            showToast('Allocation added');
+        }
+
+        function updateAllocation(id, field, val) {
+            const a = data.allocations.find(x => x.id === id);
+            if (a) { a[field] = val; saveToLocal(); }
+        }
+
+        function deleteAllocation(id) {
+            data.allocations = data.allocations.filter(x => x.id !== id);
+            renderAllocations();
+            saveToLocal();
+            showToast('Allocation deleted');
+        }
+
+        // ========== DASHBOARD ==========
+        function populateDashFilters() {
+            const skills = [...new Set(data.resources.map(r => r.primarySkill))];
+            document.getElementById('dashFilterSkill').innerHTML = '<option value="">All Skills</option>' +
+                skills.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function resetDashFilters() {
+            document.getElementById('dashFilterSkill').value = '';
+            document.getElementById('dashFilterType').value = '';
+            renderDashboard();
+        }
+
+        function getFilteredData() {
+            const sf = document.getElementById('dashFilterSkill')?.value || '';
+            const tf = document.getElementById('dashFilterType')?.value || '';
+
+            let resources = data.resources;
+            let projects = data.projects;
+
+            if (sf) resources = resources.filter(r => r.primarySkill === sf);
+            if (tf) projects = projects.filter(p => p.type === tf);
+
+            const rids = resources.map(r => r.id);
+            const pids = projects.map(p => p.id);
+            const allocations = data.allocations.filter(a => rids.includes(a.resourceId) && pids.includes(a.projectId));
+
+            return {resources, projects, allocations};
+        }
+
+        function renderDashboard() {
+            const fd = getFilteredData();
+            updateMetrics(fd);
+            renderPipelineChart(fd);
+            renderUtilizationChart(fd);
+            renderRevenueChart(fd);
+            renderSupplyDemandChart(fd);
+            renderHeatmap(fd);
+        }
+
+        function updateMetrics(fd) {
+            const active = fd.projects.filter(p => p.type === 'Active');
+            const planned = fd.projects.filter(p => p.type === 'Planned');
+
+            document.getElementById('metricActiveProjects').textContent = active.length;
+            document.getElementById('metricPlannedProjects').textContent = planned.length;
+            document.getElementById('metricWeightedFTE').textContent = planned.reduce((s,p) => s + p.requiredFTE * p.probability/100, 0).toFixed(1) + ' weighted FTE';
+            document.getElementById('metricResources').textContent = fd.resources.length;
+
+            const util = {};
+            fd.resources.forEach(r => util[r.id] = []);
+            fd.allocations.forEach(a => { if(util[a.resourceId]) util[a.resourceId].push(a.percent); });
+
+            let totalUtil = 0, count = 0, available = 0, overloaded = 0;
+            Object.values(util).forEach(arr => {
+                if (arr.length) {
+                    const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+                    totalUtil += avg; count++;
+                    if (avg < 50) available++;
+                    if (arr.some(p => p > 100)) overloaded++;
+                } else { available++; }
+            });
+
+            document.getElementById('metricAvgUtil').textContent = (count ? Math.round(totalUtil/count) : 0) + '% avg util';
+            document.getElementById('metricAvailable').textContent = available;
+            document.getElementById('metricOverloaded').textContent = overloaded;
+        }
+
+        function renderPipelineChart(fd) {
+            const ctx = document.getElementById('pipelineChart').getContext('2d');
+            if (charts.pipeline) charts.pipeline.destroy();
+
+            const sorted = [...fd.projects].sort((a,b) => a.type !== b.type ? (a.type === 'Active' ? -1 : 1) : b.probability - a.probability);
+
+            charts.pipeline = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(p => p.name.substring(0,18)),
+                    datasets: [{
+                        label: 'Required FTE',
+                        data: sorted.map(p => p.requiredFTE),
+                        backgroundColor: sorted.map(p => p.type === 'Active' ? '#059669' : '#0ea5e9'),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {legend: {display: false}},
+                    scales: {
+                        x: {beginAtZero: true, grid: {color: '#e2e8f0'}, ticks: {color: '#64748b'}},
+                        y: {grid: {display: false}, ticks: {color: '#475569', font: {size: 10}}}
+                    }
+                }
+            });
+        }
+
+        function renderUtilizationChart(fd) {
+            const ctx = document.getElementById('utilizationChart').getContext('2d');
+            if (charts.utilization) charts.utilization.destroy();
+
+            const months = sortMonths([...new Set(fd.allocations.map(a => a.month))]);
+            const cap = fd.resources.length * 100;
+            const utilByMonth = {};
+            months.forEach(m => utilByMonth[m] = 0);
+
+            fd.allocations.forEach(a => {
+                const p = data.projects.find(x => x.id === a.projectId);
+                utilByMonth[a.month] = (utilByMonth[a.month]||0) + a.percent * (p ? p.probability/100 : 1);
+            });
+
+            charts.utilization = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {label: 'Target', data: months.map(() => 100), borderColor: '#94a3b8', borderDash: [5,5], pointRadius: 0, borderWidth: 2},
+                        {label: 'Utilization %', data: months.map(m => cap ? Math.round(utilByMonth[m]/cap*100) : 0), borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.1)', fill: true, tension: 0.3, pointRadius: 4}
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, font: {size: 10}}}},
+                    scales: {
+                        y: {beginAtZero: true, max: 120, grid: {color: '#e2e8f0'}, ticks: {color: '#64748b', callback: v => v+'%'}},
+                        x: {grid: {display: false}, ticks: {color: '#64748b', font: {size: 10}}}
+                    }
+                }
+            });
+        }
+
+        function renderRevenueChart(fd) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            if (charts.revenue) charts.revenue.destroy();
+
+            const months = sortMonths([...new Set(fd.allocations.map(a => a.month))]);
+            const rev = {};
+            months.forEach(m => rev[m] = 0);
+
+            fd.allocations.forEach(a => {
+                const r = data.resources.find(x => x.id === a.resourceId);
+                const p = data.projects.find(x => x.id === a.projectId);
+                if (r && p) rev[a.month] = (rev[a.month]||0) + r.costRate * (a.percent/100) * r.hoursPerWeek * 4.33 * (p.probability/100);
+            });
+
+            charts.revenue = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{label: 'Revenue ($K)', data: months.map(m => Math.round(rev[m]/1000)), backgroundColor: '#10b981', borderRadius: 4}]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {legend: {display: false}},
+                    scales: {
+                        y: {beginAtZero: true, grid: {color: '#e2e8f0'}, ticks: {color: '#64748b', callback: v => '$'+v+'K'}},
+                        x: {grid: {display: false}, ticks: {color: '#64748b', font: {size: 10}}}
+                    }
+                }
+            });
+        }
+
+        function renderSupplyDemandChart(fd) {
+            const ctx = document.getElementById('supplyDemandChart').getContext('2d');
+            if (charts.supplyDemand) charts.supplyDemand.destroy();
+
+            const supply = {}, demand = {};
+            fd.resources.forEach(r => supply[r.primarySkill] = (supply[r.primarySkill]||0) + 1);
+
+            const mc = [...new Set(fd.allocations.map(a => a.month))].length || 1;
+            fd.allocations.forEach(a => {
+                const r = data.resources.find(x => x.id === a.resourceId);
+                const p = data.projects.find(x => x.id === a.projectId);
+                if (r && p) demand[r.primarySkill] = (demand[r.primarySkill]||0) + (a.percent/100) * (p.probability/100);
+            });
+            Object.keys(demand).forEach(s => demand[s] /= mc);
+
+            const skills = [...new Set([...Object.keys(supply), ...Object.keys(demand)])];
+
+            charts.supplyDemand = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: skills,
+                    datasets: [
+                        {label: 'Supply', data: skills.map(s => supply[s]||0), backgroundColor: '#10b981', borderRadius: 4},
+                        {label: 'Demand', data: skills.map(s => (demand[s]||0).toFixed(1)), backgroundColor: '#6366f1', borderRadius: 4}
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, font: {size: 10}}}},
+                    scales: {
+                        y: {beginAtZero: true, grid: {color: '#e2e8f0'}, ticks: {color: '#64748b'}},
+                        x: {grid: {display: false}, ticks: {color: '#64748b', font: {size: 10}}}
+                    }
+                }
+            });
+        }
+
+        function renderHeatmap(fd) {
+            const table = document.getElementById('heatmapTable');
+            const months = sortMonths([...new Set(data.allocations.map(a => a.month))]);
+
+            if (!months.length || !fd.resources.length) {
+                table.innerHTML = '<tr><td class="empty-state">No data</td></tr>';
+                return;
+            }
+
+            const util = {};
+            fd.resources.forEach(r => {
+                util[r.id] = {};
+                months.forEach(m => util[r.id][m] = 0);
+            });
+            fd.allocations.forEach(a => { if(util[a.resourceId]) util[a.resourceId][a.month] = (util[a.resourceId][a.month]||0) + a.percent; });
+
+            table.querySelector('thead').innerHTML = `<tr><th>Resource</th>${months.map(m => `<th>${m}</th>`).join('')}<th>Avg</th></tr>`;
+
+            table.querySelector('tbody').innerHTML = fd.resources.map(r => {
+                const vals = months.map(m => util[r.id][m]||0);
+                const nz = vals.filter(v => v > 0);
+                const avg = nz.length ? Math.round(nz.reduce((a,b)=>a+b,0)/nz.length) : 0;
+                return `<tr><td>${r.name}</td>${months.map(m => {
+                    const v = util[r.id][m]||0;
+                    return `<td><div class="heatmap-cell ${heatClass(v)}">${v}%</div></td>`;
+                }).join('')}<td><div class="heatmap-cell ${heatClass(avg)}">${avg}%</div></td></tr>`;
+            }).join('');
+        }
+
+        function heatClass(v) {
+            if (v === 0) return 'heatmap-available';
+            if (v > 100) return 'heatmap-overload';
+            if (v >= 90) return 'heatmap-high';
+            if (v >= 70) return 'heatmap-optimal';
+            if (v >= 50) return 'heatmap-medium';
+            return 'heatmap-low';
+        }
+
+        function sortMonths(months) {
+            const order = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return months.sort((a,b) => {
+                const [ma,ya] = a.split('-');
+                const [mb,yb] = b.split('-');
+                return ya !== yb ? parseInt(ya) - parseInt(yb) : order.indexOf(ma) - order.indexOf(mb);
+            });
+        }
+
+        // ========== PDF EXPORT ==========
+        async function exportPDF() {
+            showToast('Generating PDF...');
+
+            const content = document.getElementById('dashboardContent');
+            const { jsPDF } = window.jspdf;
+
+            try {
+                const canvas = await html2canvas(content, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#f8fafc'
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('l', 'mm', 'a4');
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 10;
+
+                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                pdf.save('ERP_Resource_Planning_Dashboard.pdf');
+
+                showToast('PDF downloaded!');
+            } catch (err) {
+                console.error(err);
+                showToast('Error generating PDF');
+            }
+        }
+
+        // ========== SAVE & IMPORT ==========
+        function saveFile() {
+            const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Hub Resource Planning Dashboard</title>
+    <script>
+        // Embedded data
+        const savedData = ${JSON.stringify(data, null, 2)};
+        localStorage.setItem('erpPlanningData', JSON.stringify(savedData));
+        window.location.href = window.location.href;
+    <\/script>
+</head>
+<body>
+    <p>Loading... If not redirected, <a href="${window.location.href}">click here</a></p>
+</body>
+</html>`;
+
+            const blob = new Blob([document.documentElement.outerHTML.replace(
+                /localStorage\.getItem\('erpPlanningData'\)/g,
+                `'${JSON.stringify(data).replace(/'/g, "\\'")}'`
+            )], {type: 'text/html'});
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ERP_Resource_Planning.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+
+            showToast('File saved!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        const text = await file.text();
+                        const imported = JSON.parse(text);
+                        if (imported.resources && imported.projects && imported.allocations) {
+                            data = imported;
+                            saveToLocal();
+                            renderResources();
+                            renderProjects();
+                            showToast('Data imported!');
+                        } else {
+                            showToast('Invalid format');
+                        }
+                    } catch (e) {
+                        showToast('Error reading file');
+                    }
+                }
+            };
+            input.click();
+        }
+    </script>
+
+
+</body></html>
