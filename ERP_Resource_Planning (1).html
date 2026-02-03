@@ -30,6 +30,7 @@
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -109,8 +110,11 @@
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-secondary); }
         .btn-outline:hover { background: var(--bg-hover); border-color: var(--text-muted); }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
         .btn-info { background: var(--info); color: white; }
         .btn-info:hover { background: #0369a1; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #b45309; }
         .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.75rem; }
 
         .tabs {
@@ -415,6 +419,247 @@
             margin-bottom: 1rem;
         }
 
+        /* ===== MODAL STYLES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 520px;
+            animation: modalIn 0.25s ease;
+        }
+        .modal.modal-wide { max-width: 900px; }
+
+        @keyframes modalIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { font-size: 1rem; font-weight: 600; }
+
+        .modal-body { padding: 1.25rem; }
+
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: none; border: none; cursor: pointer;
+            font-size: 1.25rem; color: var(--text-muted);
+            padding: 0.25rem; line-height: 1;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+
+        .form-group {
+            margin-bottom: 0.875rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: white;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        /* Skill / Level tag management */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .tag-item .tag-remove {
+            background: none; border: none; cursor: pointer;
+            color: var(--danger); font-size: 0.85rem; line-height: 1;
+            padding: 0; margin-left: 0.15rem;
+        }
+        .tag-item .tag-remove:hover { color: #b91c1c; }
+
+        .add-tag-row {
+            display: flex;
+            gap: 0.4rem;
+        }
+        .add-tag-row input {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        /* Positions table in project modal */
+        .positions-section {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+        .positions-section h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        .positions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+        .positions-table th {
+            background: var(--bg-page);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 0.5rem 0.5rem;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .positions-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+        .positions-table input,
+        .positions-table select {
+            width: 100%;
+            padding: 0.35rem 0.45rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.78rem;
+            background: white;
+        }
+        .positions-table input:focus,
+        .positions-table select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+        .positions-table input[type="number"] { width: 65px; }
+        .positions-table input[type="date"] { width: 130px; }
+
+        /* Project card expand/positions view */
+        .project-positions-row td {
+            padding: 0;
+            background: var(--bg-page);
+        }
+        .project-positions-inner {
+            padding: 0.75rem 1rem;
+        }
+        .project-positions-inner h5 {
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        .pos-mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .pos-mini-table th {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.4rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+        .pos-mini-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .pos-mini-table select,
+        .pos-mini-table input {
+            width: 100%;
+            padding: 0.3rem 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: white;
+        }
+        .pos-mini-table input[type="number"] { width: 60px; }
+        .pos-mini-table input[type="date"] { width: 125px; }
+
+        .btn-expand {
+            background: none; border: none; cursor: pointer;
+            font-size: 0.9rem; color: var(--text-muted);
+            padding: 0.2rem 0.4rem; border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .btn-expand:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        .header-btn-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         @media (max-width: 1200px) {
             .charts-row { grid-template-columns: 1fr; }
             .metrics-grid { grid-template-columns: repeat(3, 1fr); }
@@ -425,6 +670,8 @@
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
             .header-content { flex-direction: column; gap: 0.75rem; }
             .tabs-list { overflow-x: auto; }
+            .form-row { grid-template-columns: 1fr; }
+            .form-row-3 { grid-template-columns: 1fr; }
         }
 
         @media print {
@@ -468,7 +715,11 @@
                         <div class="card-title">Team Resources</div>
                         <div class="card-subtitle">Manage your team members and their skills</div>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="addResource()">+ Add Resource</button>
+                    <div class="header-btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="openManageSkillsModal()">⚙ Manage Skills</button>
+                        <button class="btn btn-outline btn-sm" onclick="openManageLevelsModal()">⚙ Manage Levels</button>
+                        <button class="btn btn-primary btn-sm" onclick="addResource()">+ Add Resource</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <table class="data-table" id="resourcesTable">
@@ -477,83 +728,14 @@
                                 <th>Name</th>
                                 <th>Primary Skill</th>
                                 <th>Secondary Skill</th>
+                                <th>Resource Level</th>
                                 <th>Status</th>
                                 <th>Hours/Week</th>
                                 <th>Cost Rate ($/hr)</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="resourcesBody">
-                <tr>
-                    <td><input type="text" value="Alice Johnson" onchange="updateResource('R001','name',this.value)"></td>
-                    <td><select onchange="updateResource('R001','primarySkill',this.value)"><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R001','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX" selected="">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R001','status',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Bench">Bench</option>
-                        <option value="Leave">Leave</option>
-                    </select></td>
-                    <td><input type="number" value="40" onchange="updateResource('R001','hoursPerWeek',+this.value)"></td>
-                    <td><input type="number" value="150" onchange="updateResource('R001','costRate',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R001')">×</button></td>
-                </tr>
-            
-                <tr>
-                    <td><input type="text" value="Bob Smith" onchange="updateResource('R002','name',this.value)"></td>
-                    <td><select onchange="updateResource('R002','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend" selected="">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R002','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps" selected="">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R002','status',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Bench">Bench</option>
-                        <option value="Leave">Leave</option>
-                    </select></td>
-                    <td><input type="number" value="40" onchange="updateResource('R002','hoursPerWeek',+this.value)"></td>
-                    <td><input type="number" value="160" onchange="updateResource('R002','costRate',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R002')">×</button></td>
-                </tr>
-            
-                <tr>
-                    <td><input type="text" value="Carol Williams" onchange="updateResource('R003','name',this.value)"></td>
-                    <td><select onchange="updateResource('R003','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack" selected="">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R003','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend" selected="">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R003','status',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Bench">Bench</option>
-                        <option value="Leave">Leave</option>
-                    </select></td>
-                    <td><input type="number" value="40" onchange="updateResource('R003','hoursPerWeek',+this.value)"></td>
-                    <td><input type="number" value="175" onchange="updateResource('R003','costRate',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R003')">×</button></td>
-                </tr>
-            
-                <tr>
-                    <td><input type="text" value="Sandeep Sahota" onchange="updateResource('R004','name',this.value)"></td>
-                    <td><select onchange="updateResource('R004','primarySkill',this.value)"><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack" selected="">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R004','secondarySkill',this.value)"><option value="">None</option><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R004','status',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Bench">Bench</option>
-                        <option value="Leave">Leave</option>
-                    </select></td>
-                    <td><input type="number" value="40" onchange="updateResource('R004','hoursPerWeek',+this.value)"></td>
-                    <td><input type="number" value="100" onchange="updateResource('R004','costRate',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R004')">×</button></td>
-                </tr>
-            
-                <tr>
-                    <td><input type="text" value="Ganesh Rajan" onchange="updateResource('R005','name',this.value)"></td>
-                    <td><select onchange="updateResource('R005','primarySkill',this.value)"><option value="Frontend" selected="">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R005','secondarySkill',this.value)"><option value="">None</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option><option value="DevOps">DevOps</option><option value="UI/UX">UI/UX</option><option value="QA">QA</option><option value="Data">Data</option><option value="Mobile">Mobile</option><option value="Cloud">Cloud</option><option value="Security">Security</option></select></td>
-                    <td><select onchange="updateResource('R005','status',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Bench">Bench</option>
-                        <option value="Leave">Leave</option>
-                    </select></td>
-                    <td><input type="number" value="40" onchange="updateResource('R005','hoursPerWeek',+this.value)"></td>
-                    <td><input type="number" value="100" onchange="updateResource('R005','costRate',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteResource('R005')">×</button></td>
-                </tr>
-            </tbody>
+                        <tbody id="resourcesBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -567,12 +749,13 @@
                         <div class="card-title">Projects Portfolio</div>
                         <div class="card-subtitle">Active and planned projects in your pipeline</div>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="addProject()">+ Add Project</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAddProjectModal()">+ Add Project</button>
                 </div>
                 <div class="card-body">
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Project Name</th>
                                 <th>Client</th>
                                 <th>Type</th>
@@ -584,45 +767,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="projectsBody">
-                <tr>
-                    <td><input type="text" value="E-Commerce Platform" onchange="updateProject('P001','name',this.value)" style="min-width:140px"></td>
-                    <td><input type="text" value="RetailCorp" onchange="updateProject('P001','client',this.value)"></td>
-                    <td><select onchange="updateProject('P001','type',this.value)">
-                        <option value="Active" selected="">Active</option>
-                        <option value="Planned">Planned</option>
-                    </select></td>
-                    <td><input type="number" value="100" min="0" max="100" onchange="updateProject('P001','probability',+this.value)"></td>
-                    <td><select onchange="updateProject('P001','priority',this.value)">
-                        <option value="High" selected="">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                    </select></td>
-                    <td><input type="date" value="2025-01-15" onchange="updateProject('P001','startDate',this.value)"></td>
-                    <td><input type="date" value="2025-06-30" onchange="updateProject('P001','endDate',this.value)"></td>
-                    <td><input type="number" value="3" step="0.5" onchange="updateProject('P001','requiredFTE',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('P001')">×</button></td>
-                </tr>
-            
-                <tr>
-                    <td><input type="text" value="Analytics Dashboard" onchange="updateProject('P002','name',this.value)" style="min-width:140px"></td>
-                    <td><input type="text" value="DataDriven Inc" onchange="updateProject('P002','client',this.value)"></td>
-                    <td><select onchange="updateProject('P002','type',this.value)">
-                        <option value="Active">Active</option>
-                        <option value="Planned" selected="">Planned</option>
-                    </select></td>
-                    <td><input type="number" value="75" min="0" max="100" onchange="updateProject('P002','probability',+this.value)"></td>
-                    <td><select onchange="updateProject('P002','priority',this.value)">
-                        <option value="High">High</option>
-                        <option value="Medium" selected="">Medium</option>
-                        <option value="Low">Low</option>
-                    </select></td>
-                    <td><input type="date" value="2025-03-01" onchange="updateProject('P002','startDate',this.value)"></td>
-                    <td><input type="date" value="2025-07-31" onchange="updateProject('P002','endDate',this.value)"></td>
-                    <td><input type="number" value="2" step="0.5" onchange="updateProject('P002','requiredFTE',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('P002')">×</button></td>
-                </tr>
-            </tbody>
+                        <tbody id="projectsBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -640,76 +785,11 @@
                 </div>
                 <div class="card-body">
                     <div class="filters-bar">
-                        <select class="filter-select" id="allocFilterResource" onchange="renderAllocations()"><option value="">All Resources</option><option value="R001">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option></select>
-                        <select class="filter-select" id="allocFilterProject" onchange="renderAllocations()"><option value="">All Projects</option><option value="P001">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option></select>
-                        <select class="filter-select" id="allocFilterMonth" onchange="renderAllocations()"><option value="">All Months</option><option value="Jan-2025">Jan-2025</option><option value="Feb-2025">Feb-2025</option></select>
+                        <select class="filter-select" id="allocFilterResource" onchange="renderAllocations()"><option value="">All Resources</option></select>
+                        <select class="filter-select" id="allocFilterProject" onchange="renderAllocations()"><option value="">All Projects</option></select>
+                        <select class="filter-select" id="allocFilterMonth" onchange="renderAllocations()"><option value="">All Months</option></select>
                     </div>
-                    <div class="allocation-grid" id="allocationsGrid">
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('A001','resourceId',this.value)">
-                        <option value="R001" selected="">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
-                    </select>
-                    <select onchange="updateAllocation('A001','projectId',this.value)">
-                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
-                    </select>
-                    <select onchange="updateAllocation('A001','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
-                    <input type="number" value="80" min="0" max="100" onchange="updateAllocation('A001','percent',+this.value)">
-                    <input type="text" value="Lead Developer" placeholder="Role" onchange="updateAllocation('A001','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A001')">×</button>
-                </div>
-            
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('A002','resourceId',this.value)">
-                        <option value="R001">Sanjay Vyas</option><option value="R002" selected="">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
-                    </select>
-                    <select onchange="updateAllocation('A002','projectId',this.value)">
-                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
-                    </select>
-                    <select onchange="updateAllocation('A002','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
-                    <input type="number" value="60" min="0" max="100" onchange="updateAllocation('A002','percent',+this.value)">
-                    <input type="text" value="Backend Dev" placeholder="Role" onchange="updateAllocation('A002','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A002')">×</button>
-                </div>
-            
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('A003','resourceId',this.value)">
-                        <option value="R001" selected="">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
-                    </select>
-                    <select onchange="updateAllocation('A003','projectId',this.value)">
-                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
-                    </select>
-                    <select onchange="updateAllocation('A003','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
-                    <input type="number" value="80" min="0" max="100" onchange="updateAllocation('A003','percent',+this.value)">
-                    <input type="text" value="Lead Developer" placeholder="Role" onchange="updateAllocation('A003','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A003')">×</button>
-                </div>
-            
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('A004','resourceId',this.value)">
-                        <option value="R001">Sanjay Vyas</option><option value="R002" selected="">Bob Smith</option><option value="R003">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
-                    </select>
-                    <select onchange="updateAllocation('A004','projectId',this.value)">
-                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
-                    </select>
-                    <select onchange="updateAllocation('A004','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
-                    <input type="number" value="70" min="0" max="100" onchange="updateAllocation('A004','percent',+this.value)">
-                    <input type="text" value="Backend Dev" placeholder="Role" onchange="updateAllocation('A004','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A004')">×</button>
-                </div>
-            
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('A005','resourceId',this.value)">
-                        <option value="R001">Sanjay Vyas</option><option value="R002">Bob Smith</option><option value="R003" selected="">Carol Williams</option><option value="R004">Sandeep Sahota</option><option value="R005">Ganesh Rajan</option>
-                    </select>
-                    <select onchange="updateAllocation('A005','projectId',this.value)">
-                        <option value="P001" selected="">E-Commerce Platform</option><option value="P002">Analytics Dashboard</option>
-                    </select>
-                    <select onchange="updateAllocation('A005','month',this.value)"><option value="Dec-2025">Dec-2025</option><option value="Jan-2026">Jan-2026</option><option value="Feb-2026">Feb-2026</option><option value="Mar-2026">Mar-2026</option><option value="Apr-2026">Apr-2026</option><option value="May-2026">May-2026</option><option value="Jun-2026">Jun-2026</option><option value="Jul-2026">Jul-2026</option><option value="Aug-2026">Aug-2026</option><option value="Sep-2026">Sep-2026</option><option value="Oct-2026">Oct-2026</option><option value="Nov-2026">Nov-2026</option><option value="Dec-2026">Dec-2026</option><option value="Jan-2027">Jan-2027</option></select>
-                    <input type="number" value="50" min="0" max="100" onchange="updateAllocation('A005','percent',+this.value)">
-                    <input type="text" value="Full Stack Dev" placeholder="Role" onchange="updateAllocation('A005','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('A005')">×</button>
-                </div>
-            </div>
+                    <div class="allocation-grid" id="allocationsGrid"></div>
                 </div>
             </div>
         </div>
@@ -718,7 +798,7 @@
         <div id="tab-dashboard" class="tab-panel">
             <div class="dashboard-header">
                 <div class="filters-bar" style="margin-bottom: 0;">
-                    <select class="filter-select" id="dashFilterSkill" onchange="renderDashboard()"><option value="">All Skills</option><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Full Stack">Full Stack</option></select>
+                    <select class="filter-select" id="dashFilterSkill" onchange="renderDashboard()"><option value="">All Skills</option></select>
                     <select class="filter-select" id="dashFilterType" onchange="renderDashboard()">
                         <option value="">All Types</option>
                         <option value="Active">Active</option>
@@ -733,25 +813,25 @@
                 <section class="metrics-grid">
                     <div class="metric-card primary">
                         <div class="metric-icon">📂</div>
-                        <div class="metric-value" id="metricActiveProjects">1</div>
+                        <div class="metric-value" id="metricActiveProjects">0</div>
                         <div class="metric-label">Active Projects</div>
                         <div class="metric-subtitle">Confirmed</div>
                     </div>
                     <div class="metric-card info">
                         <div class="metric-icon">📋</div>
-                        <div class="metric-value" id="metricPlannedProjects">1</div>
+                        <div class="metric-value" id="metricPlannedProjects">0</div>
                         <div class="metric-label">Planned Projects</div>
-                        <div class="metric-subtitle" id="metricWeightedFTE">1.5 weighted FTE</div>
+                        <div class="metric-subtitle" id="metricWeightedFTE">0 weighted FTE</div>
                     </div>
                     <div class="metric-card success">
                         <div class="metric-icon">👥</div>
-                        <div class="metric-value" id="metricResources">5</div>
+                        <div class="metric-value" id="metricResources">0</div>
                         <div class="metric-label">Total Resources</div>
-                        <div class="metric-subtitle" id="metricAvgUtil">65% avg util</div>
+                        <div class="metric-subtitle" id="metricAvgUtil">0% avg util</div>
                     </div>
                     <div class="metric-card warning">
                         <div class="metric-icon">⚠️</div>
-                        <div class="metric-value" id="metricAvailable">2</div>
+                        <div class="metric-value" id="metricAvailable">0</div>
                         <div class="metric-label">Available</div>
                         <div class="metric-subtitle">Under 50%</div>
                     </div>
@@ -769,14 +849,14 @@
                             <div class="chart-title">Project Pipeline</div>
                             <div class="chart-subtitle">Active and planned projects by FTE</div>
                         </div>
-                        <div class="chart-container"><canvas id="pipelineChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                        <div class="chart-container"><canvas id="pipelineChart"></canvas></div>
                     </div>
                     <div class="chart-card">
                         <div class="chart-header">
                             <div class="chart-title">Aggregate Utilization</div>
                             <div class="chart-subtitle">Team capacity over time</div>
                         </div>
-                        <div class="chart-container"><canvas id="utilizationChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                        <div class="chart-container"><canvas id="utilizationChart"></canvas></div>
                     </div>
                 </section>
 
@@ -786,14 +866,14 @@
                             <div class="chart-title">Projected Revenue</div>
                             <div class="chart-subtitle">Monthly revenue forecast</div>
                         </div>
-                        <div class="chart-container"><canvas id="revenueChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                        <div class="chart-container"><canvas id="revenueChart"></canvas></div>
                     </div>
                     <div class="chart-card">
                         <div class="chart-header">
                             <div class="chart-title">Supply vs Demand</div>
                             <div class="chart-subtitle">Capacity gap by skill</div>
                         </div>
-                        <div class="chart-container"><canvas id="supplyDemandChart" width="1318" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 659px;"></canvas></div>
+                        <div class="chart-container"><canvas id="supplyDemandChart"></canvas></div>
                     </div>
                 </section>
 
@@ -805,8 +885,8 @@
                         </div>
                         <div class="heatmap-container">
                             <table class="heatmap-table" id="heatmapTable">
-                                <thead><tr><th>Resource</th><th>Jan-2025</th><th>Feb-2025</th><th>Avg</th></tr></thead>
-                                <tbody><tr><td>Alice Johnson</td><td><div class="heatmap-cell heatmap-optimal">80%</div></td><td><div class="heatmap-cell heatmap-optimal">80%</div></td><td><div class="heatmap-cell heatmap-optimal">80%</div></td></tr><tr><td>Bob Smith</td><td><div class="heatmap-cell heatmap-medium">60%</div></td><td><div class="heatmap-cell heatmap-optimal">70%</div></td><td><div class="heatmap-cell heatmap-medium">65%</div></td></tr><tr><td>Carol Williams</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-medium">50%</div></td><td><div class="heatmap-cell heatmap-medium">50%</div></td></tr><tr><td>Sandeep Sahota</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td></tr><tr><td>Ganesh Rajan</td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td><td><div class="heatmap-cell heatmap-available">0%</div></td></tr></tbody>
+                                <thead><tr><th>Resource</th></tr></thead>
+                                <tbody></tbody>
                             </table>
                         </div>
                         <div class="legend">
@@ -825,17 +905,153 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- MANAGE SKILLS MODAL -->
+    <div class="modal-overlay" id="manageSkillsOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Manage Skills</h3>
+                <button class="modal-close" onclick="closeModal('manageSkillsOverlay')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.75rem;">
+                    Add or remove skills available in the Primary Skill and Secondary Skill dropdowns.
+                </p>
+                <div class="tag-list" id="skillTagList"></div>
+                <div class="add-tag-row">
+                    <input type="text" id="newSkillInput" placeholder="Enter new skill name..." onkeydown="if(event.key==='Enter')addSkillTag()">
+                    <button class="btn btn-primary btn-sm" onclick="addSkillTag()">+ Add</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline btn-sm" onclick="closeModal('manageSkillsOverlay')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGE RESOURCE LEVELS MODAL -->
+    <div class="modal-overlay" id="manageLevelsOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Manage Resource Levels</h3>
+                <button class="modal-close" onclick="closeModal('manageLevelsOverlay')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.75rem;">
+                    Add or remove resource level options available in the Resource Level dropdown.
+                </p>
+                <div class="tag-list" id="levelTagList"></div>
+                <div class="add-tag-row">
+                    <input type="text" id="newLevelInput" placeholder="Enter new level name..." onkeydown="if(event.key==='Enter')addLevelTag()">
+                    <button class="btn btn-primary btn-sm" onclick="addLevelTag()">+ Add</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline btn-sm" onclick="closeModal('manageLevelsOverlay')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT PROJECT MODAL -->
+    <div class="modal-overlay" id="projectModalOverlay">
+        <div class="modal modal-wide">
+            <div class="modal-header">
+                <h3 id="projectModalTitle">Add Project</h3>
+                <button class="modal-close" onclick="closeModal('projectModalOverlay')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Name</label>
+                        <input type="text" id="pf_name" placeholder="Project name">
+                    </div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <input type="text" id="pf_client" placeholder="Client name">
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="pf_type">
+                            <option value="Active">Active</option>
+                            <option value="Planned" selected>Planned</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Probability %</label>
+                        <input type="number" id="pf_probability" value="50" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="pf_priority">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="pf_startDate">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="pf_endDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Required FTE</label>
+                        <input type="number" id="pf_requiredFTE" value="1" min="1" step="1" onchange="updateProjectFormPositions()">
+                    </div>
+                </div>
+
+                <div class="positions-section" id="projectFormPositionsSection">
+                    <h4>Positions (based on Required FTE)</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="positions-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Position</th>
+                                    <th>Resource Level</th>
+                                    <th>% Capacity</th>
+                                    <th>Expected Start</th>
+                                    <th>Expected End</th>
+                                    <th>Resource Allocation</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectFormPositionsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline btn-sm" onclick="closeModal('projectModalOverlay')">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="projectModalSaveBtn" onclick="saveProjectFromModal()">Save Project</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== DATA STORE ==========
         let data = {
+            skills: ['Frontend','Backend','Full Stack','DevOps','UI/UX','QA','Data','Mobile','Cloud','Security'],
+            resourceLevels: ['Junior','Mid','Senior','Lead','Principal'],
             resources: [
-                {id: "R001", name: "Alice Johnson", primarySkill: "Frontend", secondarySkill: "UI/UX", status: "Active", hoursPerWeek: 40, costRate: 150},
-                {id: "R002", name: "Bob Smith", primarySkill: "Backend", secondarySkill: "DevOps", status: "Active", hoursPerWeek: 40, costRate: 160},
-                {id: "R003", name: "Carol Williams", primarySkill: "Full Stack", secondarySkill: "Backend", status: "Active", hoursPerWeek: 40, costRate: 175}
+                {id: "R001", name: "Alice Johnson", primarySkill: "Frontend", secondarySkill: "UI/UX", resourceLevel: "Senior", status: "Active", hoursPerWeek: 40, costRate: 150},
+                {id: "R002", name: "Bob Smith", primarySkill: "Backend", secondarySkill: "DevOps", resourceLevel: "Senior", status: "Active", hoursPerWeek: 40, costRate: 160},
+                {id: "R003", name: "Carol Williams", primarySkill: "Full Stack", secondarySkill: "Backend", resourceLevel: "Lead", status: "Active", hoursPerWeek: 40, costRate: 175}
             ],
             projects: [
-                {id: "P001", name: "E-Commerce Platform", client: "RetailCorp", type: "Active", probability: 100, priority: "High", startDate: "2025-01-15", endDate: "2025-06-30", requiredFTE: 3},
-                {id: "P002", name: "Analytics Dashboard", client: "DataDriven Inc", type: "Planned", probability: 75, priority: "Medium", startDate: "2025-03-01", endDate: "2025-07-31", requiredFTE: 2}
+                {id: "P001", name: "E-Commerce Platform", client: "RetailCorp", type: "Active", probability: 100, priority: "High", startDate: "2025-01-15", endDate: "2025-06-30", requiredFTE: 3, positions: [
+                    {posId: "POS001", position: "Lead Developer", resourceLevel: "Lead", capacity: 100, expectedStart: "2025-01-15", expectedEnd: "2025-06-30", resourceId: "R001"},
+                    {posId: "POS002", position: "Backend Developer", resourceLevel: "Senior", capacity: 100, expectedStart: "2025-01-15", expectedEnd: "2025-06-30", resourceId: "R002"},
+                    {posId: "POS003", position: "Full Stack Developer", resourceLevel: "Senior", capacity: 100, expectedStart: "2025-02-01", expectedEnd: "2025-06-30", resourceId: "R003"}
+                ]},
+                {id: "P002", name: "Analytics Dashboard", client: "DataDriven Inc", type: "Planned", probability: 75, priority: "Medium", startDate: "2025-03-01", endDate: "2025-07-31", requiredFTE: 2, positions: [
+                    {posId: "POS004", position: "Frontend Developer", resourceLevel: "Mid", capacity: 100, expectedStart: "2025-03-01", expectedEnd: "2025-07-31", resourceId: ""},
+                    {posId: "POS005", position: "Data Engineer", resourceLevel: "Senior", capacity: 100, expectedStart: "2025-03-01", expectedEnd: "2025-07-31", resourceId: ""}
+                ]}
             ],
             allocations: [
                 {id: "A001", resourceId: "R001", projectId: "P001", month: "Jan-2025", percent: 80, role: "Lead Developer"},
@@ -847,13 +1063,46 @@
         };
 
         let charts = {};
+        let editingProjectId = null; // null = adding new, otherwise editing
+        let expandedProjects = {};   // track which project rows are expanded
+        let posIdCounter = 100;
 
         // ========== INITIALIZE ==========
         document.addEventListener('DOMContentLoaded', function() {
             // Load saved data if exists
-            const saved = '{"resources":[{"id":"R001","name":"Sanjay Vyas","primarySkill":"Frontend","secondarySkill":"UI/UX","status":"Active","hoursPerWeek":40,"costRate":150},{"id":"R002","name":"Sameer Nayak","primarySkill":"Backend","secondarySkill":"DevOps","status":"Active","hoursPerWeek":40,"costRate":160},{"id":"R003","name":"Abhinav Sirohi","primarySkill":"Full Stack","secondarySkill":"Backend","status":"Active","hoursPerWeek":40,"costRate":175},{"id":"R004","name":"Sandeep Sahota","primarySkill":"Full Stack","secondarySkill":"Frontend","status":"Active","hoursPerWeek":40,"costRate":100},{"id":"R005","name":"Ganesh Rajan","primarySkill":"Frontend","secondarySkill":"","status":"Active","hoursPerWeek":40,"costRate":100}],"projects":[{"id":"P001","name":"E-Commerce Platform","client":"RetailCorp","type":"Active","probability":100,"priority":"High","startDate":"2025-01-15","endDate":"2025-06-30","requiredFTE":3},{"id":"P002","name":"Analytics Dashboard","client":"DataDriven Inc","type":"Planned","probability":75,"priority":"Medium","startDate":"2025-03-01","endDate":"2025-07-31","requiredFTE":2}],"allocations":[{"id":"A001","resourceId":"R001","projectId":"P001","month":"Jan-2025","percent":80,"role":"Lead Developer"},{"id":"A002","resourceId":"R002","projectId":"P001","month":"Jan-2025","percent":60,"role":"Backend Dev"},{"id":"A003","resourceId":"R001","projectId":"P001","month":"Feb-2025","percent":80,"role":"Lead Developer"},{"id":"A004","resourceId":"R002","projectId":"P001","month":"Feb-2025","percent":70,"role":"Backend Dev"},{"id":"A005","resourceId":"R003","projectId":"P001","month":"Feb-2025","percent":50,"role":"Full Stack Dev"}]}';
+            const saved = localStorage.getItem('erpPlanningData');
             if (saved) {
-                try { data = JSON.parse(saved); } catch(e) {}
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Migrate old data: add skills/resourceLevels/positions if missing
+                    if (!parsed.skills) parsed.skills = data.skills;
+                    if (!parsed.resourceLevels) parsed.resourceLevels = data.resourceLevels;
+                    if (parsed.resources) {
+                        parsed.resources.forEach(r => {
+                            if (!r.resourceLevel) r.resourceLevel = 'Mid';
+                        });
+                    }
+                    if (parsed.projects) {
+                        parsed.projects.forEach(p => {
+                            if (!p.positions) {
+                                p.positions = [];
+                                const count = Math.max(1, Math.round(p.requiredFTE || 1));
+                                for (let i = 0; i < count; i++) {
+                                    p.positions.push({
+                                        posId: 'POS' + (++posIdCounter).toString().padStart(3,'0'),
+                                        position: 'Position ' + (i+1),
+                                        resourceLevel: 'Mid',
+                                        capacity: 100,
+                                        expectedStart: p.startDate || '',
+                                        expectedEnd: p.endDate || '',
+                                        resourceId: ''
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    data = parsed;
+                } catch(e) {}
             }
 
             // Setup tab navigation
@@ -896,23 +1145,135 @@
             return prefix + (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
         }
 
+        function genPosId() {
+            posIdCounter++;
+            // Also scan existing
+            data.projects.forEach(p => {
+                (p.positions || []).forEach(pos => {
+                    const n = parseInt(pos.posId.replace('POS','')) || 0;
+                    if (n >= posIdCounter) posIdCounter = n + 1;
+                });
+            });
+            return 'POS' + posIdCounter.toString().padStart(3,'0');
+        }
+
         function saveToLocal() {
             localStorage.setItem('erpPlanningData', JSON.stringify(data));
+        }
+
+        // ========== MODAL HELPERS ==========
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // ========== SKILLS MANAGEMENT ==========
+        function openManageSkillsModal() {
+            renderSkillTags();
+            openModal('manageSkillsOverlay');
+        }
+
+        function renderSkillTags() {
+            const container = document.getElementById('skillTagList');
+            container.innerHTML = data.skills.map((s, i) => `
+                <span class="tag-item">
+                    ${s}
+                    <button class="tag-remove" onclick="removeSkill(${i})" title="Remove">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function addSkillTag() {
+            const input = document.getElementById('newSkillInput');
+            const val = input.value.trim();
+            if (!val) return;
+            if (data.skills.includes(val)) {
+                showToast('Skill already exists');
+                return;
+            }
+            data.skills.push(val);
+            input.value = '';
+            renderSkillTags();
+            saveToLocal();
+            renderResources();
+            showToast('Skill "' + val + '" added');
+        }
+
+        function removeSkill(index) {
+            const skill = data.skills[index];
+            // Check if skill is in use
+            const inUse = data.resources.some(r => r.primarySkill === skill || r.secondarySkill === skill);
+            if (inUse) {
+                if (!confirm(`Skill "${skill}" is assigned to resources. Remove anyway? Resources will keep their current values.`)) return;
+            }
+            data.skills.splice(index, 1);
+            renderSkillTags();
+            saveToLocal();
+            renderResources();
+            showToast('Skill "' + skill + '" removed');
+        }
+
+        // ========== RESOURCE LEVELS MANAGEMENT ==========
+        function openManageLevelsModal() {
+            renderLevelTags();
+            openModal('manageLevelsOverlay');
+        }
+
+        function renderLevelTags() {
+            const container = document.getElementById('levelTagList');
+            container.innerHTML = data.resourceLevels.map((l, i) => `
+                <span class="tag-item">
+                    ${l}
+                    <button class="tag-remove" onclick="removeLevel(${i})" title="Remove">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function addLevelTag() {
+            const input = document.getElementById('newLevelInput');
+            const val = input.value.trim();
+            if (!val) return;
+            if (data.resourceLevels.includes(val)) {
+                showToast('Level already exists');
+                return;
+            }
+            data.resourceLevels.push(val);
+            input.value = '';
+            renderLevelTags();
+            saveToLocal();
+            renderResources();
+            showToast('Level "' + val + '" added');
+        }
+
+        function removeLevel(index) {
+            const level = data.resourceLevels[index];
+            const inUse = data.resources.some(r => r.resourceLevel === level);
+            if (inUse) {
+                if (!confirm(`Level "${level}" is assigned to resources. Remove anyway?`)) return;
+            }
+            data.resourceLevels.splice(index, 1);
+            renderLevelTags();
+            saveToLocal();
+            renderResources();
+            showToast('Level "' + level + '" removed');
         }
 
         // ========== RESOURCES ==========
         function renderResources() {
             const tbody = document.getElementById('resourcesBody');
             if (data.resources.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">👥</div><h3>No resources yet</h3><p>Add your first team member</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">👥</div><h3>No resources yet</h3><p>Add your first team member</p></td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.resources.map(r => `
                 <tr>
-                    <td><input type="text" value="${r.name}" onchange="updateResource('${r.id}','name',this.value)"></td>
+                    <td><input type="text" value="${esc(r.name)}" onchange="updateResource('${r.id}','name',this.value)"></td>
                     <td><select onchange="updateResource('${r.id}','primarySkill',this.value)">${skillOpts(r.primarySkill)}</select></td>
                     <td><select onchange="updateResource('${r.id}','secondarySkill',this.value)"><option value="">None</option>${skillOpts(r.secondarySkill)}</select></td>
+                    <td><select onchange="updateResource('${r.id}','resourceLevel',this.value)">${levelOpts(r.resourceLevel)}</select></td>
                     <td><select onchange="updateResource('${r.id}','status',this.value)">
                         <option value="Active" ${r.status==='Active'?'selected':''}>Active</option>
                         <option value="Bench" ${r.status==='Bench'?'selected':''}>Bench</option>
@@ -925,13 +1286,29 @@
             `).join('');
         }
 
+        function esc(str) {
+            return String(str).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
         function skillOpts(sel) {
-            return ['Frontend','Backend','Full Stack','DevOps','UI/UX','QA','Data','Mobile','Cloud','Security']
-                .map(s => `<option value="${s}" ${s===sel?'selected':''}>${s}</option>`).join('');
+            return data.skills.map(s => `<option value="${s}" ${s===sel?'selected':''}>${s}</option>`).join('');
+        }
+
+        function levelOpts(sel) {
+            return data.resourceLevels.map(l => `<option value="${l}" ${l===sel?'selected':''}>${l}</option>`).join('');
         }
 
         function addResource() {
-            data.resources.push({id: genId('R'), name: 'New Resource', primarySkill: 'Frontend', secondarySkill: '', status: 'Active', hoursPerWeek: 40, costRate: 100});
+            data.resources.push({
+                id: genId('R'),
+                name: 'New Resource',
+                primarySkill: data.skills[0] || '',
+                secondarySkill: '',
+                resourceLevel: data.resourceLevels[0] || '',
+                status: 'Active',
+                hoursPerWeek: 40,
+                costRate: 100
+            });
             renderResources();
             saveToLocal();
             showToast('Resource added');
@@ -956,14 +1333,18 @@
         function renderProjects() {
             const tbody = document.getElementById('projectsBody');
             if (data.projects.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📁</div><h3>No projects yet</h3><p>Add your first project</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><div class="empty-state-icon">📁</div><h3>No projects yet</h3><p>Add your first project</p></td></tr>';
                 return;
             }
 
-            tbody.innerHTML = data.projects.map(p => `
+            let html = '';
+            data.projects.forEach(p => {
+                const isExpanded = expandedProjects[p.id];
+                html += `
                 <tr>
-                    <td><input type="text" value="${p.name}" onchange="updateProject('${p.id}','name',this.value)" style="min-width:140px"></td>
-                    <td><input type="text" value="${p.client}" onchange="updateProject('${p.id}','client',this.value)"></td>
+                    <td><button class="btn-expand" onclick="toggleProjectPositions('${p.id}')" title="Show/hide positions">${isExpanded ? '▼' : '▶'}</button></td>
+                    <td><input type="text" value="${esc(p.name)}" onchange="updateProject('${p.id}','name',this.value)" style="min-width:140px"></td>
+                    <td><input type="text" value="${esc(p.client)}" onchange="updateProject('${p.id}','client',this.value)"></td>
                     <td><select onchange="updateProject('${p.id}','type',this.value)">
                         <option value="Active" ${p.type==='Active'?'selected':''}>Active</option>
                         <option value="Planned" ${p.type==='Planned'?'selected':''}>Planned</option>
@@ -976,20 +1357,223 @@
                     </select></td>
                     <td><input type="date" value="${p.startDate}" onchange="updateProject('${p.id}','startDate',this.value)"></td>
                     <td><input type="date" value="${p.endDate}" onchange="updateProject('${p.id}','endDate',this.value)"></td>
-                    <td><input type="number" value="${p.requiredFTE}" step="0.5" onchange="updateProject('${p.id}','requiredFTE',+this.value)"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">×</button></td>
+                    <td><input type="number" value="${p.requiredFTE}" step="1" min="1" onchange="updateProjectFTE('${p.id}',+this.value)"></td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="openEditProjectModal('${p.id}')" title="Edit positions">✎</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">×</button>
+                    </td>
+                </tr>`;
+
+                // Expandable positions row
+                if (isExpanded && p.positions && p.positions.length) {
+                    html += `<tr class="project-positions-row"><td colspan="10"><div class="project-positions-inner">
+                        <h5>Positions (${p.positions.length})</h5>
+                        <table class="pos-mini-table">
+                            <thead><tr>
+                                <th>#</th><th>Position</th><th>Resource Level</th><th>% Capacity</th>
+                                <th>Expected Start</th><th>Expected End</th><th>Resource Allocation</th>
+                            </tr></thead>
+                            <tbody>${p.positions.map((pos, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><input type="text" value="${esc(pos.position)}" onchange="updatePosition('${p.id}','${pos.posId}','position',this.value)"></td>
+                                    <td><select onchange="updatePosition('${p.id}','${pos.posId}','resourceLevel',this.value)">${levelOpts(pos.resourceLevel)}</select></td>
+                                    <td><input type="number" value="${pos.capacity}" min="0" max="100" onchange="updatePosition('${p.id}','${pos.posId}','capacity',+this.value)"></td>
+                                    <td><input type="date" value="${pos.expectedStart}" onchange="updatePosition('${p.id}','${pos.posId}','expectedStart',this.value)"></td>
+                                    <td><input type="date" value="${pos.expectedEnd}" onchange="updatePosition('${p.id}','${pos.posId}','expectedEnd',this.value)"></td>
+                                    <td><select onchange="updatePosition('${p.id}','${pos.posId}','resourceId',this.value)">
+                                        <option value="">-- Unassigned --</option>
+                                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===pos.resourceId?'selected':''}>${r.name}</option>`).join('')}
+                                    </select></td>
+                                </tr>
+                            `).join('')}</tbody>
+                        </table>
+                    </div></td></tr>`;
+                }
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleProjectPositions(projectId) {
+            expandedProjects[projectId] = !expandedProjects[projectId];
+            renderProjects();
+        }
+
+        function updatePosition(projectId, posId, field, val) {
+            const p = data.projects.find(x => x.id === projectId);
+            if (!p || !p.positions) return;
+            const pos = p.positions.find(x => x.posId === posId);
+            if (pos) { pos[field] = val; saveToLocal(); }
+        }
+
+        function updateProjectFTE(projectId, newFTE) {
+            const p = data.projects.find(x => x.id === projectId);
+            if (!p) return;
+            newFTE = Math.max(1, Math.round(newFTE));
+            p.requiredFTE = newFTE;
+
+            if (!p.positions) p.positions = [];
+
+            // Add positions if needed
+            while (p.positions.length < newFTE) {
+                p.positions.push({
+                    posId: genPosId(),
+                    position: 'Position ' + (p.positions.length + 1),
+                    resourceLevel: data.resourceLevels[0] || '',
+                    capacity: 100,
+                    expectedStart: p.startDate || '',
+                    expectedEnd: p.endDate || '',
+                    resourceId: ''
+                });
+            }
+            // Remove positions from the end if needed
+            while (p.positions.length > newFTE) {
+                p.positions.pop();
+            }
+
+            saveToLocal();
+            renderProjects();
+        }
+
+        // ===== ADD PROJECT MODAL =====
+        function openAddProjectModal() {
+            editingProjectId = null;
+            document.getElementById('projectModalTitle').textContent = 'Add Project';
+            document.getElementById('projectModalSaveBtn').textContent = 'Save Project';
+
+            const today = new Date().toISOString().split('T')[0];
+            const end = new Date();
+            end.setMonth(end.getMonth() + 3);
+
+            document.getElementById('pf_name').value = '';
+            document.getElementById('pf_client').value = '';
+            document.getElementById('pf_type').value = 'Planned';
+            document.getElementById('pf_probability').value = 50;
+            document.getElementById('pf_priority').value = 'Medium';
+            document.getElementById('pf_startDate').value = today;
+            document.getElementById('pf_endDate').value = end.toISOString().split('T')[0];
+            document.getElementById('pf_requiredFTE').value = 1;
+
+            updateProjectFormPositions();
+            openModal('projectModalOverlay');
+        }
+
+        function openEditProjectModal(projectId) {
+            const p = data.projects.find(x => x.id === projectId);
+            if (!p) return;
+
+            editingProjectId = projectId;
+            document.getElementById('projectModalTitle').textContent = 'Edit Project';
+            document.getElementById('projectModalSaveBtn').textContent = 'Update Project';
+
+            document.getElementById('pf_name').value = p.name;
+            document.getElementById('pf_client').value = p.client;
+            document.getElementById('pf_type').value = p.type;
+            document.getElementById('pf_probability').value = p.probability;
+            document.getElementById('pf_priority').value = p.priority;
+            document.getElementById('pf_startDate').value = p.startDate;
+            document.getElementById('pf_endDate').value = p.endDate;
+            document.getElementById('pf_requiredFTE').value = p.requiredFTE;
+
+            updateProjectFormPositions(p.positions);
+            openModal('projectModalOverlay');
+        }
+
+        function updateProjectFormPositions(existingPositions) {
+            const fte = Math.max(1, Math.round(+document.getElementById('pf_requiredFTE').value || 1));
+            const startDate = document.getElementById('pf_startDate').value;
+            const endDate = document.getElementById('pf_endDate').value;
+            const tbody = document.getElementById('projectFormPositionsBody');
+
+            let positions = existingPositions || [];
+
+            // Adjust count
+            while (positions.length < fte) {
+                positions.push({
+                    posId: genPosId(),
+                    position: '',
+                    resourceLevel: data.resourceLevels[0] || '',
+                    capacity: 100,
+                    expectedStart: startDate,
+                    expectedEnd: endDate,
+                    resourceId: ''
+                });
+            }
+            while (positions.length > fte) {
+                positions.pop();
+            }
+
+            // Store reference for saving
+            window._tempPositions = positions;
+
+            tbody.innerHTML = positions.map((pos, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td><input type="text" value="${esc(pos.position)}" placeholder="e.g. Lead Developer" onchange="window._tempPositions[${idx}].position=this.value"></td>
+                    <td><select onchange="window._tempPositions[${idx}].resourceLevel=this.value">${levelOpts(pos.resourceLevel)}</select></td>
+                    <td><input type="number" value="${pos.capacity}" min="0" max="100" onchange="window._tempPositions[${idx}].capacity=+this.value"></td>
+                    <td><input type="date" value="${pos.expectedStart}" onchange="window._tempPositions[${idx}].expectedStart=this.value"></td>
+                    <td><input type="date" value="${pos.expectedEnd}" onchange="window._tempPositions[${idx}].expectedEnd=this.value"></td>
+                    <td><select onchange="window._tempPositions[${idx}].resourceId=this.value">
+                        <option value="">-- Unassigned --</option>
+                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===pos.resourceId?'selected':''}>${r.name}</option>`).join('')}
+                    </select></td>
                 </tr>
             `).join('');
         }
 
-        function addProject() {
-            const today = new Date().toISOString().split('T')[0];
-            const end = new Date();
-            end.setMonth(end.getMonth() + 3);
-            data.projects.push({id: genId('P'), name: 'New Project', client: 'Client', type: 'Planned', probability: 50, priority: 'Medium', startDate: today, endDate: end.toISOString().split('T')[0], requiredFTE: 1});
-            renderProjects();
+        function saveProjectFromModal() {
+            const name = document.getElementById('pf_name').value.trim();
+            const client = document.getElementById('pf_client').value.trim();
+            const type = document.getElementById('pf_type').value;
+            const probability = +document.getElementById('pf_probability').value;
+            const priority = document.getElementById('pf_priority').value;
+            const startDate = document.getElementById('pf_startDate').value;
+            const endDate = document.getElementById('pf_endDate').value;
+            const requiredFTE = Math.max(1, Math.round(+document.getElementById('pf_requiredFTE').value || 1));
+
+            if (!name) {
+                showToast('Please enter a project name');
+                return;
+            }
+            if (!startDate || !endDate) {
+                showToast('Please enter start and end dates');
+                return;
+            }
+
+            const positions = (window._tempPositions || []).map(pos => ({...pos}));
+
+            if (editingProjectId) {
+                // Update existing
+                const p = data.projects.find(x => x.id === editingProjectId);
+                if (p) {
+                    p.name = name;
+                    p.client = client;
+                    p.type = type;
+                    p.probability = probability;
+                    p.priority = priority;
+                    p.startDate = startDate;
+                    p.endDate = endDate;
+                    p.requiredFTE = requiredFTE;
+                    p.positions = positions;
+                }
+                showToast('Project updated');
+            } else {
+                // Add new
+                data.projects.push({
+                    id: genId('P'),
+                    name, client, type, probability, priority,
+                    startDate, endDate, requiredFTE,
+                    positions
+                });
+                showToast('Project added');
+            }
+
             saveToLocal();
-            showToast('Project added');
+            renderProjects();
+            closeModal('projectModalOverlay');
+            window._tempPositions = null;
         }
 
         function updateProject(id, field, val) {
@@ -1001,6 +1585,7 @@
             if (confirm('Delete this project?')) {
                 data.projects = data.projects.filter(x => x.id !== id);
                 data.allocations = data.allocations.filter(x => x.projectId !== id);
+                delete expandedProjects[id];
                 renderProjects();
                 saveToLocal();
                 showToast('Project deleted');
@@ -1010,9 +1595,9 @@
         // ========== ALLOCATIONS ==========
         function populateAllocationFilters() {
             document.getElementById('allocFilterResource').innerHTML = '<option value="">All Resources</option>' +
-                data.resources.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+                data.resources.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join('');
             document.getElementById('allocFilterProject').innerHTML = '<option value="">All Projects</option>' +
-                data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                data.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
             const months = [...new Set(data.allocations.map(a => a.month))];
             document.getElementById('allocFilterMonth').innerHTML = '<option value="">All Months</option>' +
                 sortMonths(months).map(m => `<option value="${m}">${m}</option>`).join('');
@@ -1037,14 +1622,14 @@
             grid.innerHTML = filtered.map(a => `
                 <div class="allocation-row">
                     <select onchange="updateAllocation('${a.id}','resourceId',this.value)">
-                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===a.resourceId?'selected':''}>${r.name}</option>`).join('')}
+                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===a.resourceId?'selected':''}>${esc(r.name)}</option>`).join('')}
                     </select>
                     <select onchange="updateAllocation('${a.id}','projectId',this.value)">
-                        ${data.projects.map(p => `<option value="${p.id}" ${p.id===a.projectId?'selected':''}>${p.name}</option>`).join('')}
+                        ${data.projects.map(p => `<option value="${p.id}" ${p.id===a.projectId?'selected':''}>${esc(p.name)}</option>`).join('')}
                     </select>
                     <select onchange="updateAllocation('${a.id}','month',this.value)">${monthOpts(a.month)}</select>
                     <input type="number" value="${a.percent}" min="0" max="100" onchange="updateAllocation('${a.id}','percent',+this.value)">
-                    <input type="text" value="${a.role||''}" placeholder="Role" onchange="updateAllocation('${a.id}','role',this.value)">
+                    <input type="text" value="${esc(a.role||'')}" placeholder="Role" onchange="updateAllocation('${a.id}','role',this.value)">
                     <button class="btn btn-danger btn-sm" onclick="deleteAllocation('${a.id}')">×</button>
                 </div>
             `).join('');
@@ -1308,7 +1893,7 @@
                 const vals = months.map(m => util[r.id][m]||0);
                 const nz = vals.filter(v => v > 0);
                 const avg = nz.length ? Math.round(nz.reduce((a,b)=>a+b,0)/nz.length) : 0;
-                return `<tr><td>${r.name}</td>${months.map(m => {
+                return `<tr><td>${esc(r.name)}</td>${months.map(m => {
                     const v = util[r.id][m]||0;
                     return `<td><div class="heatmap-cell ${heatClass(v)}">${v}%</div></td>`;
                 }).join('')}<td><div class="heatmap-cell ${heatClass(avg)}">${avg}%</div></td></tr>`;
@@ -1371,27 +1956,9 @@
 
         // ========== SAVE & IMPORT ==========
         function saveFile() {
-            const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP Hub Resource Planning Dashboard</title>
-    <script>
-        // Embedded data
-        const savedData = ${JSON.stringify(data, null, 2)};
-        localStorage.setItem('erpPlanningData', JSON.stringify(savedData));
-        window.location.href = window.location.href;
-    <\/script>
-</head>
-<body>
-    <p>Loading... If not redirected, <a href="${window.location.href}">click here</a></p>
-</body>
-</html>`;
-
             const blob = new Blob([document.documentElement.outerHTML.replace(
                 /localStorage\.getItem\('erpPlanningData'\)/g,
-                `'${JSON.stringify(data).replace(/'/g, "\\'")}'`
+                `'${JSON.stringify(data).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
             )], {type: 'text/html'});
 
             const a = document.createElement('a');
@@ -1414,6 +1981,10 @@
                         const text = await file.text();
                         const imported = JSON.parse(text);
                         if (imported.resources && imported.projects && imported.allocations) {
+                            if (!imported.skills) imported.skills = data.skills;
+                            if (!imported.resourceLevels) imported.resourceLevels = data.resourceLevels;
+                            imported.resources.forEach(r => { if (!r.resourceLevel) r.resourceLevel = 'Mid'; });
+                            imported.projects.forEach(p => { if (!p.positions) p.positions = []; });
                             data = imported;
                             saveToLocal();
                             renderResources();
