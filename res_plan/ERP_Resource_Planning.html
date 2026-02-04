@@ -701,7 +701,6 @@
         <div class="tabs-list">
             <button class="tab-btn active" data-tab="resources">👥 Resources</button>
             <button class="tab-btn" data-tab="projects">📁 Projects</button>
-            <button class="tab-btn" data-tab="allocations">📅 Allocations</button>
             <button class="tab-btn" data-tab="dashboard">📊 Dashboard</button>
         </div>
     </nav>
@@ -769,27 +768,6 @@
                         </thead>
                         <tbody id="projectsBody"></tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ALLOCATIONS TAB -->
-        <div id="tab-allocations" class="tab-panel">
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Resource Allocations</div>
-                        <div class="card-subtitle">Map resources to projects by month</div>
-                    </div>
-                    <button class="btn btn-primary btn-sm" onclick="addAllocation()">+ Add Allocation</button>
-                </div>
-                <div class="card-body">
-                    <div class="filters-bar">
-                        <select class="filter-select" id="allocFilterResource" onchange="renderAllocations()"><option value="">All Resources</option></select>
-                        <select class="filter-select" id="allocFilterProject" onchange="renderAllocations()"><option value="">All Projects</option></select>
-                        <select class="filter-select" id="allocFilterMonth" onchange="renderAllocations()"><option value="">All Months</option></select>
-                    </div>
-                    <div class="allocation-grid" id="allocationsGrid"></div>
                 </div>
             </div>
         </div>
@@ -1052,14 +1030,8 @@
                     {posId: "POS004", position: "Frontend Developer", resourceLevel: "Mid", capacity: 100, expectedStart: "2025-03-01", expectedEnd: "2025-07-31", resourceId: ""},
                     {posId: "POS005", position: "Data Engineer", resourceLevel: "Senior", capacity: 100, expectedStart: "2025-03-01", expectedEnd: "2025-07-31", resourceId: ""}
                 ]}
-            ],
-            allocations: [
-                {id: "A001", resourceId: "R001", projectId: "P001", month: "Jan-2025", percent: 80, role: "Lead Developer"},
-                {id: "A002", resourceId: "R002", projectId: "P001", month: "Jan-2025", percent: 60, role: "Backend Dev"},
-                {id: "A003", resourceId: "R001", projectId: "P001", month: "Feb-2025", percent: 80, role: "Lead Developer"},
-                {id: "A004", resourceId: "R002", projectId: "P001", month: "Feb-2025", percent: 70, role: "Backend Dev"},
-                {id: "A005", resourceId: "R003", projectId: "P001", month: "Feb-2025", percent: 50, role: "Full Stack Dev"}
             ]
+            // NOTE: allocations array removed - now automatically derived from project positions
         };
 
         let charts = {};
@@ -1123,10 +1095,7 @@
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
-            if (tabName === 'allocations') {
-                populateAllocationFilters();
-                renderAllocations();
-            } else if (tabName === 'dashboard') {
+            if (tabName === 'dashboard') {
                 populateDashFilters();
                 renderDashboard();
             }
@@ -1140,7 +1109,7 @@
         }
 
         function genId(prefix) {
-            const arr = prefix === 'R' ? data.resources : prefix === 'P' ? data.projects : data.allocations;
+            const arr = prefix === 'R' ? data.resources : prefix === 'P' ? data.projects : [];
             const nums = arr.map(x => parseInt(x.id.replace(prefix, '')) || 0);
             return prefix + (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
         }
@@ -1322,7 +1291,7 @@
         function deleteResource(id) {
             if (confirm('Delete this resource?')) {
                 data.resources = data.resources.filter(x => x.id !== id);
-                data.allocations = data.allocations.filter(x => x.resourceId !== id);
+                // Note: Allocations are now derived from project positions, no need to delete separately
                 renderResources();
                 saveToLocal();
                 showToast('Resource deleted');
@@ -1584,7 +1553,7 @@
         function deleteProject(id) {
             if (confirm('Delete this project?')) {
                 data.projects = data.projects.filter(x => x.id !== id);
-                data.allocations = data.allocations.filter(x => x.projectId !== id);
+                // Note: Allocations are now derived from project positions, no need to delete separately
                 delete expandedProjects[id];
                 renderProjects();
                 saveToLocal();
@@ -1592,84 +1561,9 @@
             }
         }
 
-        // ========== ALLOCATIONS ==========
-        function populateAllocationFilters() {
-            document.getElementById('allocFilterResource').innerHTML = '<option value="">All Resources</option>' +
-                data.resources.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join('');
-            document.getElementById('allocFilterProject').innerHTML = '<option value="">All Projects</option>' +
-                data.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
-            const months = [...new Set(data.allocations.map(a => a.month))];
-            document.getElementById('allocFilterMonth').innerHTML = '<option value="">All Months</option>' +
-                sortMonths(months).map(m => `<option value="${m}">${m}</option>`).join('');
-        }
-
-        function renderAllocations() {
-            const grid = document.getElementById('allocationsGrid');
-            const rf = document.getElementById('allocFilterResource').value;
-            const pf = document.getElementById('allocFilterProject').value;
-            const mf = document.getElementById('allocFilterMonth').value;
-
-            let filtered = data.allocations;
-            if (rf) filtered = filtered.filter(a => a.resourceId === rf);
-            if (pf) filtered = filtered.filter(a => a.projectId === pf);
-            if (mf) filtered = filtered.filter(a => a.month === mf);
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><h3>No allocations</h3><p>Map resources to projects</p></div>';
-                return;
-            }
-
-            grid.innerHTML = filtered.map(a => `
-                <div class="allocation-row">
-                    <select onchange="updateAllocation('${a.id}','resourceId',this.value)">
-                        ${data.resources.map(r => `<option value="${r.id}" ${r.id===a.resourceId?'selected':''}>${esc(r.name)}</option>`).join('')}
-                    </select>
-                    <select onchange="updateAllocation('${a.id}','projectId',this.value)">
-                        ${data.projects.map(p => `<option value="${p.id}" ${p.id===a.projectId?'selected':''}>${esc(p.name)}</option>`).join('')}
-                    </select>
-                    <select onchange="updateAllocation('${a.id}','month',this.value)">${monthOpts(a.month)}</select>
-                    <input type="number" value="${a.percent}" min="0" max="100" onchange="updateAllocation('${a.id}','percent',+this.value)">
-                    <input type="text" value="${esc(a.role||'')}" placeholder="Role" onchange="updateAllocation('${a.id}','role',this.value)">
-                    <button class="btn btn-danger btn-sm" onclick="deleteAllocation('${a.id}')">×</button>
-                </div>
-            `).join('');
-        }
-
-        function monthOpts(sel) {
-            const months = [];
-            const d = new Date();
-            d.setDate(1);
-            for (let i = -2; i < 12; i++) {
-                const t = new Date(d);
-                t.setMonth(t.getMonth() + i);
-                months.push(t.toLocaleDateString('en-US', {month:'short',year:'numeric'}).replace(' ','-'));
-            }
-            return months.map(m => `<option value="${m}" ${m===sel?'selected':''}>${m}</option>`).join('');
-        }
-
-        function addAllocation() {
-            if (!data.resources.length || !data.projects.length) {
-                showToast('Add resources and projects first');
-                return;
-            }
-            const m = new Date().toLocaleDateString('en-US', {month:'short',year:'numeric'}).replace(' ','-');
-            data.allocations.push({id: genId('A'), resourceId: data.resources[0].id, projectId: data.projects[0].id, month: m, percent: 50, role: ''});
-            renderAllocations();
-            saveToLocal();
-            showToast('Allocation added');
-        }
-
-        function updateAllocation(id, field, val) {
-            const a = data.allocations.find(x => x.id === id);
-            if (a) { a[field] = val; saveToLocal(); }
-        }
-
-        function deleteAllocation(id) {
-            data.allocations = data.allocations.filter(x => x.id !== id);
-            renderAllocations();
-            saveToLocal();
-            showToast('Allocation deleted');
-        }
+        // ========== ALLOCATIONS (REMOVED - NOW DERIVED FROM PROJECT POSITIONS) ==========
+        // Allocation data is now automatically derived from project positions in getDerivedAllocations()
+        // This allows managing allocations directly within the Projects tab
 
         // ========== DASHBOARD ==========
         function populateDashFilters() {
@@ -1684,6 +1578,65 @@
             renderDashboard();
         }
 
+        // ========== DERIVE ALLOCATIONS FROM PROJECT POSITIONS ==========
+        function getDerivedAllocations() {
+            const allocations = [];
+            let allocIdCounter = 1;
+
+            data.projects.forEach(project => {
+                if (!project.positions) return;
+
+                project.positions.forEach(position => {
+                    if (!position.resourceId || !position.expectedStart || !position.expectedEnd) return;
+
+                    const resource = data.resources.find(r => r.id === position.resourceId);
+                    if (!resource) return;
+
+                    // Generate month list from expectedStart to expectedEnd
+                    const months = getMonthsBetween(position.expectedStart, position.expectedEnd);
+
+                    months.forEach(month => {
+                        allocations.push({
+                            id: "A" + String(allocIdCounter++).padStart(3, '0'),
+                            resourceId: position.resourceId,
+                            projectId: project.id,
+                            month: month,
+                            percent: position.capacity || 100,
+                            role: position.position || ''
+                        });
+                    });
+                });
+            });
+
+            return allocations;
+        }
+
+        function getMonthsBetween(startDate, endDate) {
+            if (!startDate || !endDate) return [];
+
+            const months = [];
+            const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            // Set to first day of month to avoid date calculation issues
+            start.setDate(1);
+            end.setDate(1);
+
+            const current = new Date(start);
+
+            while (current <= end) {
+                const monthName = monthNames[current.getMonth()];
+                const year = current.getFullYear();
+                months.push(`${monthName}-${year}`);
+
+                current.setMonth(current.getMonth() + 1);
+            }
+
+            return months;
+        }
+
         function getFilteredData() {
             const sf = document.getElementById('dashFilterSkill')?.value || '';
             const tf = document.getElementById('dashFilterType')?.value || '';
@@ -1696,7 +1649,10 @@
 
             const rids = resources.map(r => r.id);
             const pids = projects.map(p => p.id);
-            const allocations = data.allocations.filter(a => rids.includes(a.resourceId) && pids.includes(a.projectId));
+
+            // Use derived allocations from project positions
+            const allAllocations = getDerivedAllocations();
+            const allocations = allAllocations.filter(a => rids.includes(a.resourceId) && pids.includes(a.projectId));
 
             return {resources, projects, allocations};
         }
@@ -1724,17 +1680,23 @@
             fd.resources.forEach(r => util[r.id] = []);
             fd.allocations.forEach(a => { if(util[a.resourceId]) util[a.resourceId].push(a.percent); });
 
-            let totalUtil = 0, count = 0, available = 0, overloaded = 0;
-            Object.values(util).forEach(arr => {
+            let totalUtil = 0, available = 0, overloaded = 0;
+            fd.resources.forEach(r => {
+                const arr = util[r.id] || [];
                 if (arr.length) {
                     const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
-                    totalUtil += avg; count++;
+                    totalUtil += avg;
                     if (avg < 50) available++;
                     if (arr.some(p => p > 100)) overloaded++;
-                } else { available++; }
+                } else {
+                    // Resource with no allocations = 0% utilization
+                    totalUtil += 0;
+                    available++;
+                }
             });
 
-            document.getElementById('metricAvgUtil').textContent = (count ? Math.round(totalUtil/count) : 0) + '% avg util';
+            const avgUtil = fd.resources.length ? Math.round(totalUtil/fd.resources.length) : 0;
+            document.getElementById('metricAvgUtil').textContent = avgUtil + '% avg util';
             document.getElementById('metricAvailable').textContent = available;
             document.getElementById('metricOverloaded').textContent = overloaded;
         }
@@ -1873,7 +1835,9 @@
 
         function renderHeatmap(fd) {
             const table = document.getElementById('heatmapTable');
-            const months = sortMonths([...new Set(data.allocations.map(a => a.month))]);
+            // Use derived allocations instead of data.allocations
+            const allAllocations = getDerivedAllocations();
+            const months = sortMonths([...new Set(allAllocations.map(a => a.month))]);
 
             if (!months.length || !fd.resources.length) {
                 table.innerHTML = '<tr><td class="empty-state">No data</td></tr>';
@@ -1885,7 +1849,13 @@
                 util[r.id] = {};
                 months.forEach(m => util[r.id][m] = 0);
             });
-            fd.allocations.forEach(a => { if(util[a.resourceId]) util[a.resourceId][a.month] = (util[a.resourceId][a.month]||0) + a.percent; });
+            fd.allocations.forEach(a => {
+                if(util[a.resourceId]) {
+                    const proj = data.projects.find(p => p.id === a.projectId);
+                    const probability = proj ? proj.probability / 100 : 1;
+                    util[a.resourceId][a.month] = (util[a.resourceId][a.month]||0) + (a.percent * probability);
+                }
+            });
 
             table.querySelector('thead').innerHTML = `<tr><th>Resource</th>${months.map(m => `<th>${m}</th>`).join('')}<th>Avg</th></tr>`;
 
@@ -1980,11 +1950,13 @@
                     try {
                         const text = await file.text();
                         const imported = JSON.parse(text);
-                        if (imported.resources && imported.projects && imported.allocations) {
+                        if (imported.resources && imported.projects) {
                             if (!imported.skills) imported.skills = data.skills;
                             if (!imported.resourceLevels) imported.resourceLevels = data.resourceLevels;
                             imported.resources.forEach(r => { if (!r.resourceLevel) r.resourceLevel = 'Mid'; });
                             imported.projects.forEach(p => { if (!p.positions) p.positions = []; });
+                            // Remove old allocations if present (now derived from project positions)
+                            delete imported.allocations;
                             data = imported;
                             saveToLocal();
                             renderResources();
