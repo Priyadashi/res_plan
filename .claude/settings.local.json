@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(git clone:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
